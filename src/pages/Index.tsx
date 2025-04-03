@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -10,7 +11,7 @@ import FloatingContact from "@/components/FloatingContact";
 import SpecialOrderForm from "@/components/SpecialOrderForm";
 import { Product } from "@/types/product";
 import { products, getProductsByCategory, searchProducts } from "@/data/products";
-import { Search, PlusCircle } from "lucide-react";
+import { Search, PlusCircle, BarChart3, TrendingUp, Truck } from "lucide-react";
 import { STORE_NAME } from "@/config/contact";
 
 const Index = () => {
@@ -71,9 +72,28 @@ const Index = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Catálogo de Repuestos de Motos
           </h1>
-          <p className="text-lg text-center max-w-2xl mb-8">
+          <p className="text-lg text-center max-w-2xl mb-6">
             Encuentra los mejores repuestos para tu moto con calidad garantizada y envíos a todo el país
           </p>
+          
+          {/* Metrics Section */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl mb-8">
+            <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center">
+              <BarChart3 className="h-8 w-8 mb-2" />
+              <div className="text-2xl font-bold">125+</div>
+              <div className="text-sm">Talleres confían en nosotros</div>
+            </div>
+            <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center">
+              <TrendingUp className="h-8 w-8 mb-2" />
+              <div className="text-2xl font-bold">1,500+</div>
+              <div className="text-sm">Pedidos mensuales</div>
+            </div>
+            <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center">
+              <Truck className="h-8 w-8 mb-2" />
+              <div className="text-2xl font-bold">98%</div>
+              <div className="text-sm">Envíos a tiempo</div>
+            </div>
+          </div>
           
           {/* Mobile Search */}
           <div className="relative w-full max-w-md mb-4 md:hidden">
