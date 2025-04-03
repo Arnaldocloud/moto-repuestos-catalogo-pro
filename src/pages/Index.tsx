@@ -80,18 +80,18 @@ const Index = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl mb-8">
             <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center">
               <BarChart3 className="h-8 w-8 mb-2" />
-              <div className="text-2xl font-bold">125+</div>
-              <div className="text-sm">Talleres confían en nosotros</div>
+              <div className="text-2xl font-bold">Calidad</div>
+              <div className="text-sm">Repuestos garantizados</div>
             </div>
             <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center">
               <TrendingUp className="h-8 w-8 mb-2" />
-              <div className="text-2xl font-bold">1,500+</div>
-              <div className="text-sm">Pedidos mensuales</div>
+              <div className="text-2xl font-bold">Variedad</div>
+              <div className="text-sm">Múltiples marcas y modelos</div>
             </div>
             <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center">
               <Truck className="h-8 w-8 mb-2" />
-              <div className="text-2xl font-bold">98%</div>
-              <div className="text-sm">Envíos a tiempo</div>
+              <div className="text-2xl font-bold">Envíos</div>
+              <div className="text-sm">A todo el país</div>
             </div>
           </div>
           
