@@ -64,8 +64,7 @@ export const products: Product[] = [
       "Compatible con diferentes marcas"
     ],
     images: [
-      "https://images.unsplash.com/photo-1611241443322-78b19f275c21?q=80&w=2070&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1614200187524-dc4b892acf16?q=80&w=2070&auto=format&fit=crop"
+      "https://m.media-amazon.com/images/I/71ik28eLVIL._AC_UF894,1000_QL80_.jpg"
     ],
     stock: 8
   },
