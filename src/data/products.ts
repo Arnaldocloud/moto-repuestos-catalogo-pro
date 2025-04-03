@@ -42,7 +42,7 @@ export const products: Product[] = [
       "Instalación directa"
     ],
     images: [
-      "https://m.media-amazon.com/images/I/711AUcaSEdL._AC_UF894,1000_QL80_.jpg"
+      "https://m.media-amazon.com/images/I/916j1egbUFL.jpg"
     ],
     stock: 30
   },
