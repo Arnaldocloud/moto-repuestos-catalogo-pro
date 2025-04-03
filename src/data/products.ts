@@ -20,8 +20,7 @@ export const products: Product[] = [
       "Garantía de 6 meses"
     ],
     images: [
-      "https://images.unsplash.com/photo-1600861195091-690f0e132e98?q=80&w=2069&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1621072156002-e2fccdc0b176?q=80&w=2127&auto=format&fit=crop"
+      "",
     ],
     stock: 15,
     isNew: true
@@ -43,8 +42,7 @@ export const products: Product[] = [
       "Instalación directa"
     ],
     images: [
-      "https://images.unsplash.com/photo-1617116513944-0b0eccc27b98?q=80&w=1974&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1579760955639-e7ffae6f1af3?q=80&w=2071&auto=format&fit=crop"
+      ""
     ],
     stock: 30
   },
@@ -66,8 +64,8 @@ export const products: Product[] = [
       "Compatible con diferentes marcas"
     ],
     images: [
-      "https://images.unsplash.com/photo-1611241443322-78b19f275c21?q=80&w=2070&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1614200187524-dc4b892acf16?q=80&w=2070&auto=format&fit=crop"
+      "https://m.media-amazon.com/images/I/711AUcaSEdL._AC_UF894,1000_QL80_.jpg",
+      
     ],
     stock: 8
   },
