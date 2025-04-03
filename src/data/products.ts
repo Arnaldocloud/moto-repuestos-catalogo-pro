@@ -129,8 +129,7 @@ export const products: Product[] = [
       "Protección contra el desgaste y la corrosión"
     ],
     images: [
-      "https://images.unsplash.com/photo-1567606828681-5d8c32a3dbf0?q=80&w=1974&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1636901942318-972ea62b4d5d?q=80&w=1936&auto=format&fit=crop"
+      "https://m.media-amazon.com/images/I/41iSevRbxaL.jpg",
     ],
     stock: 50
   },
