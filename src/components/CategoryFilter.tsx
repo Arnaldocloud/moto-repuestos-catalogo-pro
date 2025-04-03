@@ -3,15 +3,15 @@ import React from "react";
 import { Category, categoryNames } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { 
-  Engine, 
+  Car, 
   Disc, 
   Zap, 
   Waves, 
-  Bookmark, 
+  Shield, 
   Droplets, 
   Filter, 
   Link,
-  CircleDot,
+  CircleSlash,
   Wrench
 } from "lucide-react";
 
@@ -23,15 +23,15 @@ interface CategoryFilterProps {
 // Mapa de iconos por categoría
 const categoryIcons = {
   todos: <Wrench className="h-4 w-4 mr-2" />,
-  motor: <Engine className="h-4 w-4 mr-2" />,
+  motor: <Car className="h-4 w-4 mr-2" />,
   frenos: <Disc className="h-4 w-4 mr-2" />,
   electricos: <Zap className="h-4 w-4 mr-2" />,
   suspension: <Waves className="h-4 w-4 mr-2" />,
-  carroceria: <Bookmark className="h-4 w-4 mr-2" />,
+  carroceria: <Shield className="h-4 w-4 mr-2" />,
   aceites: <Droplets className="h-4 w-4 mr-2" />,
   filtros: <Filter className="h-4 w-4 mr-2" />,
   transmision: <Link className="h-4 w-4 mr-2" />,
-  llantas: <CircleDot className="h-4 w-4 mr-2" />,
+  llantas: <CircleSlash className="h-4 w-4 mr-2" />,
   accesorios: <Wrench className="h-4 w-4 mr-2" />
 };
 
