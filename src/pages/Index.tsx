@@ -1,6 +1,7 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Settings } from "lucide-react";
 import Header from "@/components/Header";
 import CategoryFilter from "@/components/CategoryFilter";
 import ProductGrid from "@/components/ProductGrid";
@@ -55,8 +56,18 @@ const Index = () => {
       <Header onSearch={handleSearch} />
       
       {/* Hero Section */}
-      <div className="w-full bg-gradient-to-r from-motorcycle-dark to-motorcycle-red/90 text-white py-10 px-4">
+      <div className="w-full bg-gradient-to-r from-motorcycle-dark to-motorcycle-red/90 text-white py-10 px-4 relative">
         <div className="container mx-auto flex flex-col items-center">
+          {/* Add Admin Panel Button */}
+          <Link 
+            to="/admin" 
+            className="absolute top-4 right-4"
+          >
+            <Button variant="outline" size="icon" className="text-white border-white hover:bg-white/10">
+              <Settings className="h-5 w-5" />
+            </Button>
+          </Link>
+
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Catálogo de Repuestos de Motos
           </h1>
