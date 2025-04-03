@@ -108,7 +108,7 @@ export const products: Product[] = [
       "Incluye accesorios de montaje"
     ],
     images: [
-      "https://m.media-amazon.com/images/I/71ik28eLVIL._AC_UF894,1000_QL80_.jpg",
+      "https://m.media-amazon.com/images/I/51mC8xvuDHL.jpg",
     ],
     stock: 5
   },
