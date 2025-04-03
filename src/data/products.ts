@@ -86,8 +86,7 @@ export const products: Product[] = [
       "Resistente a vibraciones"
     ],
     images: [
-      "https://images.unsplash.com/photo-1682695795557-17447f989b4a?q=80&w=2070&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1682695795612-6e2b9fed03ad?q=80&w=2070&auto=format&fit=crop"
+      "https://m.media-amazon.com/images/I/81xyAzf76WL._AC_UF894,1000_QL80_.jpg"
     ],
     stock: 20,
     isNew: true
