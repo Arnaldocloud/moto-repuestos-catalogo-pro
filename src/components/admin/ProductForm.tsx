@@ -51,24 +51,6 @@ const productSchema = z.object({
 // Infer the form values type from the schema
 type ProductFormValues = z.infer<typeof productSchema>;
 
-// Create a separate type for the form's default values
-interface ProductFormDefaultValues {
-  id?: string;
-  name: string;
-  sku: string;
-  price: number;
-  discountPrice?: number;
-  brand: string;
-  category: Category;
-  compatibleModels: string; // String for form input
-  description: string;
-  features: string; // String for form input
-  images: string; // String for form input
-  stock: number;
-  isNew?: boolean;
-  isSpecialOrder?: boolean;
-}
-
 interface ProductFormProps {
   initialData?: Product;
   onSubmit: (data: Product) => void;
@@ -76,7 +58,7 @@ interface ProductFormProps {
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   // Prepare initialValues correctly
-  const getInitialValues = (): ProductFormDefaultValues => {
+  const getDefaultValues = () => {
     if (!initialData) {
       return {
         name: "",
@@ -110,7 +92,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
-    defaultValues: getInitialValues(),
+    defaultValues: getDefaultValues(),
   });
 
   const handleSubmit = (values: ProductFormValues) => {
