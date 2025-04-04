@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/types/product";
 
@@ -150,6 +151,12 @@ export const createProduct = async (product: Omit<Product, "id">): Promise<Produ
 export const updateProduct = async (id: string, product: Partial<Product>): Promise<Product> => {
   console.log("Updating product:", id, product);
   try {
+    // Validar que el ID no sea uno de los IDs de la muestra (1, 2, 3, etc.)
+    // Si es un ID numérico simple, probablemente sea de los datos de muestra y no de la base de datos
+    if (/^\d+$/.test(id)) {
+      throw new Error("No se puede actualizar un producto de muestra. Este producto no existe en la base de datos.");
+    }
+    
     const formattedProduct = formatProductForSupabase(product);
 
     const { data, error } = await supabase
@@ -172,6 +179,11 @@ export const updateProduct = async (id: string, product: Partial<Product>): Prom
 export const deleteProduct = async (id: string): Promise<boolean> => {
   console.log("Deleting product:", id);
   try {
+    // Validar que el ID no sea uno de los IDs de la muestra
+    if (/^\d+$/.test(id)) {
+      throw new Error("No se puede eliminar un producto de muestra. Este producto no existe en la base de datos.");
+    }
+    
     const { error } = await supabase
       .from("products")
       .delete()
