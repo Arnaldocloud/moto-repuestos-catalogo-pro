@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ReloadIcon, CheckCircle, XCircle } from "lucide-react";
+import { Loader, CheckCircle, XCircle } from "lucide-react";
 
 const SupabaseConnectionTest = () => {
   const [testResult, setTestResult] = useState<{
@@ -65,7 +65,7 @@ const SupabaseConnectionTest = () => {
         }
       >
         <div className="flex items-center gap-2">
-          {testResult.status === "loading" && <ReloadIcon className="h-4 w-4 animate-spin" />}
+          {testResult.status === "loading" && <Loader className="h-4 w-4 animate-spin" />}
           {testResult.status === "success" && <CheckCircle className="h-5 w-5 text-green-500" />}
           {testResult.status === "error" && <XCircle className="h-5 w-5" />}
           <AlertTitle>{testResult.message}</AlertTitle>
@@ -75,15 +75,15 @@ const SupabaseConnectionTest = () => {
 
       <div className="space-y-2">
         <div className="text-sm text-muted-foreground">
-          <strong>URL de Supabase:</strong> {supabase.supabaseUrl}
+          <strong>URL de Supabase:</strong> {supabase.getUrl()}
         </div>
         <div className="text-sm text-muted-foreground">
-          <strong>Clave pública:</strong> {supabase.supabaseKey.substring(0, 8)}...
+          <strong>Estado de la clave:</strong> {supabase.getAuth().getAccessToken() ? "Presente" : "No disponible"}
         </div>
       </div>
 
       <Button onClick={testConnection} disabled={testResult.status === "loading"}>
-        {testResult.status === "loading" && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+        {testResult.status === "loading" && <Loader className="mr-2 h-4 w-4 animate-spin" />}
         Probar conexión de nuevo
       </Button>
     </div>
