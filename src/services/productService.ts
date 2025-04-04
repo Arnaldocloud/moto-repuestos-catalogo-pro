@@ -9,7 +9,6 @@ const handleError = (error: any, message: string) => {
 
 // Helper function to format product data for Supabase
 const formatProductForSupabase = (product: Partial<Product>) => {
-  // Ensure arrays are properly formatted
   return {
     name: product.name,
     sku: product.sku,
@@ -19,20 +18,14 @@ const formatProductForSupabase = (product: Partial<Product>) => {
     category: product.category,
     compatible_models: Array.isArray(product.compatibleModels) 
       ? product.compatibleModels 
-      : typeof product.compatibleModels === 'string' 
-        ? product.compatibleModels.split(',').map(m => m.trim()) 
-        : [],
+      : [],
     description: product.description,
     features: Array.isArray(product.features) 
       ? product.features 
-      : typeof product.features === 'string' 
-        ? product.features.split('\n').filter(f => f.trim().length > 0)
-        : [],
+      : [],
     images: Array.isArray(product.images) 
       ? product.images 
-      : typeof product.images === 'string' 
-        ? product.images.split(',').map(i => i.trim())
-        : [],
+      : [],
     stock: product.stock,
     is_new: product.isNew,
     is_special_order: product.isSpecialOrder

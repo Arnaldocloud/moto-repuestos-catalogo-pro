@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,7 +55,7 @@ interface ProductFormProps {
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   // Prepare initialValues correctly
-  const getInitialValues = () => {
+  const getInitialValues = (): Partial<ProductFormValues> => {
     if (!initialData) {
       return {
         name: "",
@@ -96,17 +95,26 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   const handleSubmit = (values: ProductFormValues) => {
     // Ensure proper transformation for onSubmit handler
     const productData: Product = {
-      ...values,
-      id: values.id || String(Date.now()), // Fallback for new products
+      id: values.id || String(Date.now()),
+      name: values.name,
+      sku: values.sku,
+      price: values.price,
+      discountPrice: values.discountPrice,
+      brand: values.brand,
+      category: values.category,
       compatibleModels: Array.isArray(values.compatibleModels) 
         ? values.compatibleModels 
         : [],
+      description: values.description,
       features: Array.isArray(values.features) 
         ? values.features 
         : [],
       images: Array.isArray(values.images) 
         ? values.images 
         : [],
+      stock: values.stock,
+      isNew: values.isNew,
+      isSpecialOrder: values.isSpecialOrder,
     };
     
     onSubmit(productData);
