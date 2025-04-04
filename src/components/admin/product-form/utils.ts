@@ -38,7 +38,7 @@ export const getDefaultValues = (initialData?: Product): ProductFormDefaults => 
 };
 
 // Helper function to transform form values back to product data
-export const transformFormToProduct = (values: any): Product => {
+export const transformFormToProduct = (values: ProductFormValues): Product => {
   return {
     id: values.id || String(Date.now()),
     name: values.name,
@@ -49,14 +49,14 @@ export const transformFormToProduct = (values: any): Product => {
     category: values.category,
     compatibleModels: Array.isArray(values.compatibleModels) 
       ? values.compatibleModels 
-      : [],
+      : values.compatibleModels.split(',').map(s => s.trim()),
     description: values.description,
     features: Array.isArray(values.features) 
       ? values.features 
-      : [],
+      : values.features.split('\n').filter(s => s.trim().length > 0),
     images: Array.isArray(values.images) 
       ? values.images 
-      : [],
+      : values.images.split(',').map(s => s.trim()),
     stock: values.stock,
     isNew: values.isNew,
     isSpecialOrder: values.isSpecialOrder,

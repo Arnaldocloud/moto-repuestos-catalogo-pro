@@ -19,14 +19,14 @@ export const productSchema = z.object({
   features: z.string().transform(str => str.split('\n').filter(s => s.trim().length > 0)),
   images: z.string().transform(str => str.split(',').map(s => s.trim())),
   stock: z.coerce.number().int().min(0, { message: "El stock debe ser un número entero positivo" }),
-  isNew: z.boolean().optional(),
-  isSpecialOrder: z.boolean().optional(),
+  isNew: z.boolean().default(false),
+  isSpecialOrder: z.boolean().default(false),
 });
 
 // Infer the form values type from the schema
 export type ProductFormValues = z.infer<typeof productSchema>;
 
-// Define a type for the form's default values
+// Define a type for the form's default values that matches what React Hook Form expects
 export type ProductFormDefaults = {
   id?: string;
   name: string;
@@ -35,10 +35,10 @@ export type ProductFormDefaults = {
   discountPrice?: number;
   brand: string;
   category: Category;
-  compatibleModels: string; // String for input
+  compatibleModels: string; // String for input field
   description: string;
-  features: string; // String for input
-  images: string; // String for input
+  features: string; // String for textarea field
+  images: string; // String for input field
   stock: number;
   isNew: boolean;
   isSpecialOrder: boolean;
