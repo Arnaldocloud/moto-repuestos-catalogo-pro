@@ -3,20 +3,16 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://hgzsyjaovltugazgatna.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnenN5amFvdmx0dWdhemdhdG5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3MjU3NDUsImV4cCI6MjA1OTMwMTc0NX0._UsAJ-AK9nwH85sIr9R4Avha_60j4_OfY9saTEVSD3s";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE="https://hgzsyjaovltugazgatna.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnenN5amFvdmx0dWdhemdhdG5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3MjU3NDUsImV4cCI6MjA1OTMwMTc0NX0._UsAJ-AK9nwH85sIr9R4Avha_60j4_OfY9saTEVSD3s";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-console.log("Initializing Supabase client with URL:", SUPABASE_URL);
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-// Este registro confirma que el cliente fue creado correctamente
-console.log("Supabase client initialized", {
-  url: SUPABASE_URL,
-  keyLength: SUPABASE_PUBLISHABLE_KEY.length,
-});
+
 
 // Export these values for components that need them
 export const getSupabaseUrl = () => SUPABASE_URL;

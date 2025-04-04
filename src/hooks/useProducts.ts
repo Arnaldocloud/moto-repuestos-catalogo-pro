@@ -34,7 +34,6 @@ export const fetchProducts = async ({
   search,
   limit
 }: ProductQueryParams): Promise<Product[]> => {
-  console.log("Fetching products with params:", { category, search, limit });
   
   try {
     let query = supabase.from("products").select("*");
@@ -54,15 +53,15 @@ export const fetchProducts = async ({
     const { data, error } = await query;
     
     if (error) {
-      console.error("Error fetching products:", error);
+      
       throw new Error(`Error fetching products: ${error.message}`);
     }
     
-    console.log("Products fetched:", data?.length || 0);
+    
     // Map the data from Supabase format to our Product type
     return (data || []).map(mapProductFromSupabase);
   } catch (err) {
-    console.error("Exception in fetchProducts:", err);
+    
     // Return empty array in case of error to avoid breaking the UI
     return [];
   }
