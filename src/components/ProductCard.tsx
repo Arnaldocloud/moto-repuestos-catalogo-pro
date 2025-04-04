@@ -8,14 +8,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Share2, Eye, Tag } from "lucide-react";
 import { createWhatsAppLink, createProductQuery } from "@/config/contact";
 
-// Helper function to safely format prices
-const formatPrice = (price: number | undefined | null): string => {
-  if (price === null || price === undefined) {
-    return "N/A";
-  }
-  return price.toFixed(2);
-};
-
 interface ProductCardProps {
   product: Product;
   onQuickView: (product: Product) => void;
@@ -24,13 +16,9 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   const { name, price, discountPrice, brand, sku, images, isNew, stock, compatibleModels } = product;
   
-  // Ensure price values are safe to use
-  const safePrice = price || 0;
-  const safeDiscountPrice = discountPrice || null;
-  
-  const hasDiscount = safeDiscountPrice !== null && safeDiscountPrice < safePrice;
+  const hasDiscount = discountPrice !== undefined && discountPrice < price;
   const discountPercentage = hasDiscount 
-    ? Math.round(((safePrice - safeDiscountPrice!) / safePrice) * 100) 
+    ? Math.round(((price - discountPrice!) / price) * 100) 
     : 0;
 
   const whatsappLink = createWhatsAppLink(createProductQuery(name, sku));
@@ -77,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
         {/* Image */}
         <div className="relative aspect-square overflow-hidden">
           <img 
-            src={images && images.length > 0 ? images[0] : '/placeholder.svg'} 
+            src={images[0]} 
             alt={name} 
             className="w-full h-full object-cover product-image-zoom"
           />
@@ -135,11 +123,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
           <div className="mt-4 flex items-end gap-2">
             {hasDiscount ? (
               <>
-                <div className="text-xl font-bold text-primary">${formatPrice(safeDiscountPrice)}</div>
-                <div className="text-sm text-muted-foreground line-through">${formatPrice(safePrice)}</div>
+                <div className="text-xl font-bold text-primary">${discountPrice.toFixed(2)}</div>
+                <div className="text-sm text-muted-foreground line-through">${price.toFixed(2)}</div>
               </>
             ) : (
-              <div className="text-xl font-bold">${formatPrice(safePrice)}</div>
+              <div className="text-xl font-bold">${price.toFixed(2)}</div>
             )}
           </div>
         </div>

@@ -1,9 +1,9 @@
 
 import React, { useEffect, useState } from "react";
-import { supabase, getSupabaseUrl, hasAuthSession } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Loader, CheckCircle, XCircle, RotateCw } from "lucide-react";
+import { Loader, CheckCircle, XCircle } from "lucide-react";
 
 const SupabaseConnectionTest = () => {
   const [testResult, setTestResult] = useState<{
@@ -75,19 +75,15 @@ const SupabaseConnectionTest = () => {
 
       <div className="space-y-2">
         <div className="text-sm text-muted-foreground">
-          <strong>URL de Supabase:</strong> {getSupabaseUrl()}
+          <strong>URL de Supabase:</strong> {supabase.getUrl()}
         </div>
         <div className="text-sm text-muted-foreground">
-          <strong>Estado de la autenticación:</strong> {hasAuthSession() ? "Activa" : "No disponible"}
+          <strong>Estado de la clave:</strong> {supabase.getAuth().getAccessToken() ? "Presente" : "No disponible"}
         </div>
       </div>
 
       <Button onClick={testConnection} disabled={testResult.status === "loading"}>
-        {testResult.status === "loading" ? (
-          <Loader className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <RotateCw className="mr-2 h-4 w-4" />
-        )}
+        {testResult.status === "loading" && <Loader className="mr-2 h-4 w-4 animate-spin" />}
         Probar conexión de nuevo
       </Button>
     </div>
