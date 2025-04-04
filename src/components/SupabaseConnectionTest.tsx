@@ -1,4 +1,6 @@
 
+
+
 import React, { useEffect, useState } from "react";
 import { supabase, getSupabaseUrl, getSupabaseAuth } from "@/integrations/supabase/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,7 +16,17 @@ const SupabaseConnectionTest = () => {
     status: "idle",
     message: "No se ha realizado la prueba de conexión",
   });
-
+  async function testSupabaseConnection() {
+    const { data, error } = await supabase.from('products').select('*').limit(1);
+  
+    if (error) {
+      console.error('❌ Error en la conexión:', error);
+    } else {
+      console.log('✅ Conexión exitosa. Datos recibidos:', data);
+    }
+  }
+  
+  testSupabaseConnection();
   const testConnection = async () => {
     setTestResult({
       status: "loading",
