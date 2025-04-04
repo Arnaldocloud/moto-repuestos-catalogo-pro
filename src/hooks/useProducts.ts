@@ -9,6 +9,26 @@ interface ProductQueryParams {
   limit?: number;
 }
 
+// Helper function to map database records to our Product type
+const mapDatabaseToProduct = (record: any): Product => {
+  return {
+    id: record.id,
+    name: record.name,
+    sku: record.sku,
+    price: record.price,
+    discountPrice: record.discount_price,
+    brand: record.brand,
+    category: record.category,
+    compatibleModels: record.compatible_models || [],
+    description: record.description,
+    features: record.features || [],
+    images: record.images || [],
+    stock: record.stock,
+    isNew: record.is_new,
+    isSpecialOrder: record.is_special_order
+  };
+};
+
 export const fetchProducts = async ({ 
   category, 
   search,
@@ -39,7 +59,8 @@ export const fetchProducts = async ({
     }
     
     console.log("Products fetched:", data?.length || 0);
-    return data as Product[] || [];
+    // Map database records to our Product type
+    return (data || []).map(mapDatabaseToProduct);
   } catch (err) {
     console.error("Exception in fetchProducts:", err);
     // Return empty array in case of error to avoid breaking the UI
