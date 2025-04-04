@@ -5,6 +5,19 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Loader, CheckCircle, XCircle } from "lucide-react";
 
+async function testSupabaseConnection() {
+  const { data, error } = await supabase.from('products').select('*').limit(1);
+
+  if (error) {
+    console.error('❌ Error al conectar con Supabase:', error.message);
+  } else {
+    console.log('✅ Conexión exitosa con Supabase. Primeros datos:', data);
+  }
+}
+
+testSupabaseConnection();
+
+
 const SupabaseConnectionTest = () => {
   const [testResult, setTestResult] = useState<{
     status: "idle" | "loading" | "success" | "error";
