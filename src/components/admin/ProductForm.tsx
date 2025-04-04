@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,6 +50,24 @@ const productSchema = z.object({
 // Infer the form values type from the schema
 type ProductFormValues = z.infer<typeof productSchema>;
 
+// Definir un tipo para los valores por defecto del formulario
+type ProductFormDefaults = {
+  id?: string;
+  name: string;
+  sku: string;
+  price: number;
+  discountPrice?: number;
+  brand: string;
+  category: Category;
+  compatibleModels: string; // String para el input
+  description: string;
+  features: string; // String para el input
+  images: string; // String para el input
+  stock: number;
+  isNew: boolean;
+  isSpecialOrder: boolean;
+};
+
 interface ProductFormProps {
   initialData?: Product;
   onSubmit: (data: Product) => void;
@@ -58,7 +75,7 @@ interface ProductFormProps {
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   // Prepare initialValues correctly
-  const getDefaultValues = () => {
+  const getDefaultValues = (): ProductFormDefaults => {
     if (!initialData) {
       return {
         name: "",
@@ -87,12 +104,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
       images: Array.isArray(initialData.images) 
         ? initialData.images.join(", ") 
         : "",
+      isNew: initialData.isNew || false,
+      isSpecialOrder: initialData.isSpecialOrder || false,
     };
   };
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
-    defaultValues: getDefaultValues(),
+    defaultValues: getDefaultValues() as any, // Usamos 'as any' para evitar problemas de tipado
   });
 
   const handleSubmit = (values: ProductFormValues) => {

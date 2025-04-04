@@ -1,27 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, Pencil, Trash2, X, Check, Eye } from "lucide-react";
 import { Product, Category, categoryNames } from "@/types/product";
-import { products as initialProducts } from "@/data/products";
+import { products as initialSampleProducts } from "@/data/products";
 import ProductForm from "./ProductForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { createProduct, updateProduct, deleteProduct } from "@/services/productService";
+import { useProducts } from "@/hooks/useProducts";
 
 const ProductsAdmin: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  
+  const { data: databaseProducts, isLoading, error } = useProducts();
+  
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  
+  useEffect(() => {
+    if (databaseProducts) {
+      setProducts(databaseProducts);
+    } else {
+      setProducts(initialSampleProducts);
+    }
+  }, [databaseProducts]);
 
   const filteredProducts = searchTerm
     ? products.filter(
@@ -34,14 +46,9 @@ const ProductsAdmin: React.FC = () => {
 
   const handleAddProduct = async (newProduct: Product) => {
     try {
-      const productWithId = {
-        ...newProduct,
-        id: (products.length + 1).toString(),
-      };
+      const createdProduct = await createProduct(newProduct);
 
-      await createProduct(newProduct);
-
-      setProducts([...products, productWithId]);
+      setProducts([...products, createdProduct]);
       setIsAddDialogOpen(false);
 
       queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -50,11 +57,11 @@ const ProductsAdmin: React.FC = () => {
         title: "Producto añadido",
         description: `${newProduct.name} ha sido añadido correctamente.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al añadir producto:", error);
       toast({
         title: "Error",
-        description: "No se pudo añadir el producto. Inténtalo de nuevo.",
+        description: error.message || "No se pudo añadir el producto. Inténtalo de nuevo.",
         variant: "destructive",
       });
     }
@@ -62,6 +69,10 @@ const ProductsAdmin: React.FC = () => {
 
   const handleEditProduct = async (updatedProduct: Product) => {
     try {
+      if (/^\d+$/.test(updatedProduct.id)) {
+        throw new Error("No puedes editar un producto de muestra. Los productos de muestra no están en la base de datos.");
+      }
+      
       await updateProduct(updatedProduct.id, updatedProduct);
 
       setProducts(
@@ -77,11 +88,11 @@ const ProductsAdmin: React.FC = () => {
         title: "Producto actualizado",
         description: `${updatedProduct.name} ha sido actualizado correctamente.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al actualizar producto:", error);
       toast({
         title: "Error",
-        description: "No se pudo actualizar el producto. Inténtalo de nuevo.",
+        description: error.message || "No se pudo actualizar el producto. Inténtalo de nuevo.",
         variant: "destructive",
       });
     }
@@ -91,6 +102,10 @@ const ProductsAdmin: React.FC = () => {
     if (!currentProduct) return;
     
     try {
+      if (/^\d+$/.test(currentProduct.id)) {
+        throw new Error("No puedes eliminar un producto de muestra. Los productos de muestra no están en la base de datos.");
+      }
+      
       await deleteProduct(currentProduct.id);
 
       setProducts(products.filter((product) => product.id !== currentProduct.id));
@@ -103,11 +118,11 @@ const ProductsAdmin: React.FC = () => {
         description: `${currentProduct.name} ha sido eliminado correctamente.`,
         variant: "destructive",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al eliminar producto:", error);
       toast({
         title: "Error",
-        description: "No se pudo eliminar el producto. Inténtalo de nuevo.",
+        description: error.message || "No se pudo eliminar el producto. Inténtalo de nuevo.",
         variant: "destructive",
       });
     }
@@ -138,83 +153,91 @@ const ProductsAdmin: React.FC = () => {
         </Button>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>SKU</TableHead>
-              <TableHead>Producto</TableHead>
-              <TableHead>Categoría</TableHead>
-              <TableHead>Precio</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredProducts.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center py-8">Cargando productos...</div>
+      ) : error ? (
+        <div className="text-center py-8 text-red-500">
+          Error al cargar productos. Mostrando productos de muestra.
+        </div>
+      ) : (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
-                  No se encontraron productos
-                </TableCell>
+                <TableHead>SKU</TableHead>
+                <TableHead>Producto</TableHead>
+                <TableHead>Categoría</TableHead>
+                <TableHead>Precio</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
-            ) : (
-              filteredProducts.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.sku}</TableCell>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>{categoryNames[product.category as Category]}</TableCell>
-                  <TableCell>${product.price.toFixed(2)}</TableCell>
-                  <TableCell>
-                    <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      product.stock > 10
-                        ? "bg-green-100 text-green-800"
-                        : product.stock > 0
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
-                    }`}>
-                      {product.stock}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setCurrentProduct(product);
-                          setIsViewDialogOpen(true);
-                        }}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setCurrentProduct(product);
-                          setIsEditDialogOpen(true);
-                        }}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setCurrentProduct(product);
-                          setIsDeleteDialogOpen(true);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {filteredProducts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    No se encontraron productos
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ) : (
+                filteredProducts.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-medium">{product.sku}</TableCell>
+                    <TableCell>{product.name}</TableCell>
+                    <TableCell>{categoryNames[product.category as Category]}</TableCell>
+                    <TableCell>${product.price.toFixed(2)}</TableCell>
+                    <TableCell>
+                      <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        product.stock > 10
+                          ? "bg-green-100 text-green-800"
+                          : product.stock > 0
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}>
+                        {product.stock}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setCurrentProduct(product);
+                            setIsViewDialogOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setCurrentProduct(product);
+                            setIsEditDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setCurrentProduct(product);
+                            setIsDeleteDialogOpen(true);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
