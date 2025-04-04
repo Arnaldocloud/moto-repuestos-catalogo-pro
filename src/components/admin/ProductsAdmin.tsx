@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +9,12 @@ import ProductForm from "./ProductForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { createProduct, updateProduct, deleteProduct } from "@/services/productService";
 
 const ProductsAdmin: React.FC = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -30,45 +32,85 @@ const ProductsAdmin: React.FC = () => {
       )
     : products;
 
-  const handleAddProduct = (newProduct: Product) => {
-    // En una aplicación real, aquí se haría una llamada a una API
-    const productWithId = {
-      ...newProduct,
-      id: (products.length + 1).toString(),
-    };
-    setProducts([...products, productWithId]);
-    setIsAddDialogOpen(false);
-    toast({
-      title: "Producto añadido",
-      description: `${newProduct.name} ha sido añadido correctamente.`,
-    });
+  const handleAddProduct = async (newProduct: Product) => {
+    try {
+      const productWithId = {
+        ...newProduct,
+        id: (products.length + 1).toString(),
+      };
+
+      await createProduct(newProduct);
+
+      setProducts([...products, productWithId]);
+      setIsAddDialogOpen(false);
+
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+
+      toast({
+        title: "Producto añadido",
+        description: `${newProduct.name} ha sido añadido correctamente.`,
+      });
+    } catch (error) {
+      console.error("Error al añadir producto:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo añadir el producto. Inténtalo de nuevo.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleEditProduct = (updatedProduct: Product) => {
-    // En una aplicación real, aquí se haría una llamada a una API
-    setProducts(
-      products.map((product) =>
-        product.id === updatedProduct.id ? updatedProduct : product
-      )
-    );
-    setIsEditDialogOpen(false);
-    toast({
-      title: "Producto actualizado",
-      description: `${updatedProduct.name} ha sido actualizado correctamente.`,
-    });
+  const handleEditProduct = async (updatedProduct: Product) => {
+    try {
+      await updateProduct(updatedProduct.id, updatedProduct);
+
+      setProducts(
+        products.map((product) =>
+          product.id === updatedProduct.id ? updatedProduct : product
+        )
+      );
+      setIsEditDialogOpen(false);
+
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+
+      toast({
+        title: "Producto actualizado",
+        description: `${updatedProduct.name} ha sido actualizado correctamente.`,
+      });
+    } catch (error) {
+      console.error("Error al actualizar producto:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el producto. Inténtalo de nuevo.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteProduct = () => {
+  const handleDeleteProduct = async () => {
     if (!currentProduct) return;
     
-    // En una aplicación real, aquí se haría una llamada a una API
-    setProducts(products.filter((product) => product.id !== currentProduct.id));
-    setIsDeleteDialogOpen(false);
-    toast({
-      title: "Producto eliminado",
-      description: `${currentProduct.name} ha sido eliminado correctamente.`,
-      variant: "destructive",
-    });
+    try {
+      await deleteProduct(currentProduct.id);
+
+      setProducts(products.filter((product) => product.id !== currentProduct.id));
+      setIsDeleteDialogOpen(false);
+
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+
+      toast({
+        title: "Producto eliminado",
+        description: `${currentProduct.name} ha sido eliminado correctamente.`,
+        variant: "destructive",
+      });
+    } catch (error) {
+      console.error("Error al eliminar producto:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el producto. Inténtalo de nuevo.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -174,7 +216,6 @@ const ProductsAdmin: React.FC = () => {
         </Table>
       </div>
 
-      {/* Add Product Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -184,7 +225,6 @@ const ProductsAdmin: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Product Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -199,7 +239,6 @@ const ProductsAdmin: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* View Product Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -278,7 +317,6 @@ const ProductsAdmin: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

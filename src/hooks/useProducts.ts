@@ -9,6 +9,26 @@ interface ProductQueryParams {
   limit?: number;
 }
 
+// Helper function to map Supabase product data to our Product type
+const mapProductFromSupabase = (product: any): Product => {
+  return {
+    id: product.id,
+    name: product.name,
+    sku: product.sku,
+    price: product.price || 0,
+    discountPrice: product.discount_price,
+    brand: product.brand,
+    category: product.category,
+    compatibleModels: product.compatible_models || [],
+    description: product.description,
+    features: product.features || [],
+    images: product.images || [],
+    stock: product.stock || 0,
+    isNew: product.is_new,
+    isSpecialOrder: product.is_special_order
+  };
+};
+
 export const fetchProducts = async ({ 
   category, 
   search,
@@ -39,7 +59,8 @@ export const fetchProducts = async ({
     }
     
     console.log("Products fetched:", data?.length || 0);
-    return data as Product[] || [];
+    // Map the data from Supabase format to our Product type
+    return (data || []).map(mapProductFromSupabase);
   } catch (err) {
     console.error("Exception in fetchProducts:", err);
     // Return empty array in case of error to avoid breaking the UI

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/types/product";
 
@@ -6,6 +5,58 @@ import { Product } from "@/types/product";
 const handleError = (error: any, message: string) => {
   console.error(message, error);
   throw error;
+};
+
+// Helper function to format product data for Supabase
+const formatProductForSupabase = (product: Partial<Product>) => {
+  // Ensure arrays are properly formatted
+  return {
+    name: product.name,
+    sku: product.sku,
+    price: product.price,
+    discount_price: product.discountPrice,
+    brand: product.brand,
+    category: product.category,
+    compatible_models: Array.isArray(product.compatibleModels) 
+      ? product.compatibleModels 
+      : typeof product.compatibleModels === 'string' 
+        ? product.compatibleModels.split(',').map(m => m.trim()) 
+        : [],
+    description: product.description,
+    features: Array.isArray(product.features) 
+      ? product.features 
+      : typeof product.features === 'string' 
+        ? product.features.split('\n').filter(f => f.trim().length > 0)
+        : [],
+    images: Array.isArray(product.images) 
+      ? product.images 
+      : typeof product.images === 'string' 
+        ? product.images.split(',').map(i => i.trim())
+        : [],
+    stock: product.stock,
+    is_new: product.isNew,
+    is_special_order: product.isSpecialOrder
+  };
+};
+
+// Helper function to format Supabase data for our app
+const formatSupabaseProduct = (data: any): Product => {
+  return {
+    id: data.id,
+    name: data.name,
+    sku: data.sku,
+    price: data.price,
+    discountPrice: data.discount_price,
+    brand: data.brand,
+    category: data.category,
+    compatibleModels: data.compatible_models || [],
+    description: data.description,
+    features: data.features || [],
+    images: data.images || [],
+    stock: data.stock || 0,
+    isNew: data.is_new,
+    isSpecialOrder: data.is_special_order
+  };
 };
 
 export const getProducts = async (): Promise<Product[]> => {
@@ -17,7 +68,7 @@ export const getProducts = async (): Promise<Product[]> => {
       return handleError(error, "Error fetching products:");
     }
     
-    return data as Product[] || [];
+    return (data || []).map(formatSupabaseProduct);
   } catch (err) {
     return handleError(err, "Exception in getProducts:");
   }
@@ -39,7 +90,7 @@ export const getProductsByCategory = async (category: string): Promise<Product[]
       return handleError(error, "Error fetching products by category:");
     }
     
-    return data as Product[] || [];
+    return (data || []).map(formatSupabaseProduct);
   } catch (err) {
     return handleError(err, "Exception in getProductsByCategory:");
   }
@@ -57,7 +108,7 @@ export const searchProducts = async (query: string): Promise<Product[]> => {
       return handleError(error, "Error searching products:");
     }
     
-    return data as Product[] || [];
+    return (data || []).map(formatSupabaseProduct);
   } catch (err) {
     return handleError(err, "Exception in searchProducts:");
   }
@@ -76,7 +127,7 @@ export const getProduct = async (id: string): Promise<Product> => {
       return handleError(error, "Error fetching product:");
     }
     
-    return data as Product;
+    return formatSupabaseProduct(data);
   } catch (err) {
     return handleError(err, "Exception in getProduct:");
   }
@@ -85,25 +136,7 @@ export const getProduct = async (id: string): Promise<Product> => {
 export const createProduct = async (product: Omit<Product, "id">): Promise<Product> => {
   console.log("Creating product:", product);
   try {
-    // Make sure arrays are properly formatted
-    const formattedProduct = {
-      ...product,
-      compatibleModels: Array.isArray(product.compatibleModels) 
-        ? product.compatibleModels 
-        : typeof product.compatibleModels === 'string' 
-          ? product.compatibleModels.split(',').map(m => m.trim()) 
-          : [],
-      features: Array.isArray(product.features) 
-        ? product.features 
-        : typeof product.features === 'string' 
-          ? product.features.split(',').map(f => f.trim())
-          : [],
-      images: Array.isArray(product.images) 
-        ? product.images 
-        : typeof product.images === 'string' 
-          ? product.images.split(',').map(i => i.trim())
-          : []
-    };
+    const formattedProduct = formatProductForSupabase(product);
 
     const { data, error } = await supabase
       .from("products")
@@ -115,7 +148,7 @@ export const createProduct = async (product: Omit<Product, "id">): Promise<Produ
       return handleError(error, "Error creating product:");
     }
     
-    return data as Product;
+    return formatSupabaseProduct(data);
   } catch (err) {
     return handleError(err, "Exception in createProduct:");
   }
@@ -124,31 +157,7 @@ export const createProduct = async (product: Omit<Product, "id">): Promise<Produ
 export const updateProduct = async (id: string, product: Partial<Product>): Promise<Product> => {
   console.log("Updating product:", id, product);
   try {
-    // Make sure arrays are properly formatted
-    const formattedProduct = {
-      ...product,
-      compatibleModels: product.compatibleModels && (
-        Array.isArray(product.compatibleModels) 
-          ? product.compatibleModels 
-          : typeof product.compatibleModels === 'string' 
-            ? product.compatibleModels.split(',').map(m => m.trim()) 
-            : product.compatibleModels
-      ),
-      features: product.features && (
-        Array.isArray(product.features) 
-          ? product.features 
-          : typeof product.features === 'string' 
-            ? product.features.split(',').map(f => f.trim())
-            : product.features
-      ),
-      images: product.images && (
-        Array.isArray(product.images) 
-          ? product.images 
-          : typeof product.images === 'string' 
-            ? product.images.split(',').map(i => i.trim())
-            : product.images
-      )
-    };
+    const formattedProduct = formatProductForSupabase(product);
 
     const { data, error } = await supabase
       .from("products")
@@ -161,7 +170,7 @@ export const updateProduct = async (id: string, product: Partial<Product>): Prom
       return handleError(error, "Error updating product:");
     }
     
-    return data as Product;
+    return formatSupabaseProduct(data);
   } catch (err) {
     return handleError(err, "Exception in updateProduct:");
   }
