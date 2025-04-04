@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,10 +64,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
         price: 0,
         brand: "",
         category: "motor" as Category,
-        compatibleModels: "",
+        compatibleModels: "", // This is correct - the schema transforms it to array
         description: "",
-        features: "",
-        images: "",
+        features: "", // This is correct - the schema transforms it to array
+        images: "", // This is correct - the schema transforms it to array
         stock: 0,
         isNew: false,
         isSpecialOrder: false,
