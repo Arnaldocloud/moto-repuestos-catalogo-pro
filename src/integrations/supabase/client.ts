@@ -13,7 +13,10 @@ console.log("Initializing Supabase client with URL:", SUPABASE_URL);
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 // Este registro confirma que el cliente fue creado correctamente
-console.log("Supabase client initialized:", {
-  url: supabase.supabaseUrl,
-  keyLength: supabase.supabaseKey.length,
+console.log("Supabase client initialized", {
+  url: SUPABASE_URL,
+  keyLength: SUPABASE_PUBLISHABLE_KEY.length,
 });
+
+// Helper methods to access protected properties
+supabase.getUrl = () => SUPABASE_URL;

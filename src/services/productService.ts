@@ -2,124 +2,200 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/types/product";
 
-export const getProducts = async () => {
-  console.log("Calling getProducts in productService");
-  const { data, error } = await supabase.from("products").select("*");
-  
-  if (error) {
-    console.error("Error fetching products:", error);
-    throw error;
-  }
-  
-  return data as Product[];
+// Helper function to handle errors
+const handleError = (error: any, message: string) => {
+  console.error(message, error);
+  throw error;
 };
 
-export const getProductsByCategory = async (category: string) => {
+export const getProducts = async (): Promise<Product[]> => {
+  console.log("Calling getProducts in productService");
+  try {
+    const { data, error } = await supabase.from("products").select("*");
+    
+    if (error) {
+      return handleError(error, "Error fetching products:");
+    }
+    
+    return data as Product[] || [];
+  } catch (err) {
+    return handleError(err, "Exception in getProducts:");
+  }
+};
+
+export const getProductsByCategory = async (category: string): Promise<Product[]> => {
   console.log("Fetching products by category:", category);
   if (category === "todos") {
     return getProducts();
   }
   
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("category", category);
-  
-  if (error) {
-    console.error("Error fetching products by category:", error);
-    throw error;
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("category", category);
+    
+    if (error) {
+      return handleError(error, "Error fetching products by category:");
+    }
+    
+    return data as Product[] || [];
+  } catch (err) {
+    return handleError(err, "Exception in getProductsByCategory:");
   }
-  
-  return data as Product[];
 };
 
-export const searchProducts = async (query: string) => {
+export const searchProducts = async (query: string): Promise<Product[]> => {
   console.log("Searching products with query:", query);
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .or(`name.ilike.%${query}%, sku.ilike.%${query}%, brand.ilike.%${query}%`);
-  
-  if (error) {
-    console.error("Error searching products:", error);
-    throw error;
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .or(`name.ilike.%${query}%, sku.ilike.%${query}%, brand.ilike.%${query}%`);
+    
+    if (error) {
+      return handleError(error, "Error searching products:");
+    }
+    
+    return data as Product[] || [];
+  } catch (err) {
+    return handleError(err, "Exception in searchProducts:");
   }
-  
-  return data as Product[];
 };
 
-export const getProduct = async (id: string) => {
+export const getProduct = async (id: string): Promise<Product> => {
   console.log("Fetching product with id:", id);
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .single();
-  
-  if (error) {
-    console.error("Error fetching product:", error);
-    throw error;
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", id)
+      .single();
+    
+    if (error) {
+      return handleError(error, "Error fetching product:");
+    }
+    
+    return data as Product;
+  } catch (err) {
+    return handleError(err, "Exception in getProduct:");
   }
-  
-  return data as Product;
 };
 
-export const createProduct = async (product: Omit<Product, "id">) => {
+export const createProduct = async (product: Omit<Product, "id">): Promise<Product> => {
   console.log("Creating product:", product);
-  const { data, error } = await supabase
-    .from("products")
-    .insert(product)
-    .select()
-    .single();
-  
-  if (error) {
-    console.error("Error creating product:", error);
-    throw error;
+  try {
+    // Make sure arrays are properly formatted
+    const formattedProduct = {
+      ...product,
+      compatibleModels: Array.isArray(product.compatibleModels) 
+        ? product.compatibleModels 
+        : typeof product.compatibleModels === 'string' 
+          ? product.compatibleModels.split(',').map(m => m.trim()) 
+          : [],
+      features: Array.isArray(product.features) 
+        ? product.features 
+        : typeof product.features === 'string' 
+          ? product.features.split(',').map(f => f.trim())
+          : [],
+      images: Array.isArray(product.images) 
+        ? product.images 
+        : typeof product.images === 'string' 
+          ? product.images.split(',').map(i => i.trim())
+          : []
+    };
+
+    const { data, error } = await supabase
+      .from("products")
+      .insert(formattedProduct)
+      .select()
+      .single();
+    
+    if (error) {
+      return handleError(error, "Error creating product:");
+    }
+    
+    return data as Product;
+  } catch (err) {
+    return handleError(err, "Exception in createProduct:");
   }
-  
-  return data as Product;
 };
 
-export const updateProduct = async (id: string, product: Partial<Product>) => {
+export const updateProduct = async (id: string, product: Partial<Product>): Promise<Product> => {
   console.log("Updating product:", id, product);
-  const { data, error } = await supabase
-    .from("products")
-    .update(product)
-    .eq("id", id)
-    .select()
-    .single();
-  
-  if (error) {
-    console.error("Error updating product:", error);
-    throw error;
+  try {
+    // Make sure arrays are properly formatted
+    const formattedProduct = {
+      ...product,
+      compatibleModels: product.compatibleModels && (
+        Array.isArray(product.compatibleModels) 
+          ? product.compatibleModels 
+          : typeof product.compatibleModels === 'string' 
+            ? product.compatibleModels.split(',').map(m => m.trim()) 
+            : product.compatibleModels
+      ),
+      features: product.features && (
+        Array.isArray(product.features) 
+          ? product.features 
+          : typeof product.features === 'string' 
+            ? product.features.split(',').map(f => f.trim())
+            : product.features
+      ),
+      images: product.images && (
+        Array.isArray(product.images) 
+          ? product.images 
+          : typeof product.images === 'string' 
+            ? product.images.split(',').map(i => i.trim())
+            : product.images
+      )
+    };
+
+    const { data, error } = await supabase
+      .from("products")
+      .update(formattedProduct)
+      .eq("id", id)
+      .select()
+      .single();
+    
+    if (error) {
+      return handleError(error, "Error updating product:");
+    }
+    
+    return data as Product;
+  } catch (err) {
+    return handleError(err, "Exception in updateProduct:");
   }
-  
-  return data as Product;
 };
 
-export const deleteProduct = async (id: string) => {
+export const deleteProduct = async (id: string): Promise<boolean> => {
   console.log("Deleting product:", id);
-  const { error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", id);
-  
-  if (error) {
-    console.error("Error deleting product:", error);
-    throw error;
+  try {
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id);
+    
+    if (error) {
+      return handleError(error, "Error deleting product:");
+    }
+    
+    return true;
+  } catch (err) {
+    return handleError(err, "Exception in deleteProduct:");
   }
-  
-  return true;
 };
 
 export const getCategories = async () => {
   console.log("Fetching categories");
-  const { data, error } = await supabase.from("categories").select("*");
-  
-  if (error) {
-    console.error("Error fetching categories:", error);
-    throw error;
+  try {
+    const { data, error } = await supabase.from("categories").select("*");
+    
+    if (error) {
+      return handleError(error, "Error fetching categories:");
+    }
+    
+    return data || [];
+  } catch (err) {
+    return handleError(err, "Exception in getCategories:");
   }
-  
-  return data;
 };
