@@ -27,6 +27,7 @@ import { Textarea } from "@/components/ui/textarea";
 // Convertir las claves del objeto categoryNames a un array
 const categoryOptions = Object.keys(categoryNames) as Category[];
 
+// Define the form schema with proper transformations
 const productSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(3, { message: "El nombre debe tener al menos 3 caracteres" }),
@@ -47,7 +48,26 @@ const productSchema = z.object({
   isSpecialOrder: z.boolean().optional(),
 });
 
+// Infer the form values type from the schema
 type ProductFormValues = z.infer<typeof productSchema>;
+
+// Create a separate type for the form's default values
+interface ProductFormDefaultValues {
+  id?: string;
+  name: string;
+  sku: string;
+  price: number;
+  discountPrice?: number;
+  brand: string;
+  category: Category;
+  compatibleModels: string; // String for form input
+  description: string;
+  features: string; // String for form input
+  images: string; // String for form input
+  stock: number;
+  isNew?: boolean;
+  isSpecialOrder?: boolean;
+}
 
 interface ProductFormProps {
   initialData?: Product;
@@ -56,7 +76,7 @@ interface ProductFormProps {
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   // Prepare initialValues correctly
-  const getInitialValues = (): Partial<ProductFormValues> => {
+  const getInitialValues = (): ProductFormDefaultValues => {
     if (!initialData) {
       return {
         name: "",
@@ -64,10 +84,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
         price: 0,
         brand: "",
         category: "motor" as Category,
-        compatibleModels: "", // This is correct - the schema transforms it to array
+        compatibleModels: "", // String for input
         description: "",
-        features: "", // This is correct - the schema transforms it to array
-        images: "", // This is correct - the schema transforms it to array
+        features: "", // String for input
+        images: "", // String for input
         stock: 0,
         isNew: false,
         isSpecialOrder: false,
