@@ -9,7 +9,86 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          id: string
+          name: string
+        }
+        Insert: {
+          id: string
+          name: string
+        }
+        Update: {
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          brand: string
+          category: string
+          compatible_models: string[]
+          created_at: string | null
+          description: string
+          discount_price: number | null
+          features: string[]
+          id: string
+          images: string[]
+          is_new: boolean | null
+          is_special_order: boolean | null
+          name: string
+          price: number
+          sku: string
+          stock: number
+          updated_at: string | null
+        }
+        Insert: {
+          brand: string
+          category: string
+          compatible_models?: string[]
+          created_at?: string | null
+          description: string
+          discount_price?: number | null
+          features?: string[]
+          id?: string
+          images?: string[]
+          is_new?: boolean | null
+          is_special_order?: boolean | null
+          name: string
+          price: number
+          sku: string
+          stock?: number
+          updated_at?: string | null
+        }
+        Update: {
+          brand?: string
+          category?: string
+          compatible_models?: string[]
+          created_at?: string | null
+          description?: string
+          discount_price?: number | null
+          features?: string[]
+          id?: string
+          images?: string[]
+          is_new?: boolean | null
+          is_special_order?: boolean | null
+          name?: string
+          price?: number
+          sku?: string
+          stock?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
