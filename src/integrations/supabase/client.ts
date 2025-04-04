@@ -18,8 +18,5 @@ console.log("Supabase client initialized", {
   keyLength: SUPABASE_PUBLISHABLE_KEY.length,
 });
 
-// Helper function to get URL - safer than accessing a protected property
-export const getSupabaseUrl = () => SUPABASE_URL;
-
-// Helper function to check authentication status
-export const hasAuthSession = () => supabase.auth.getSession() !== null;
+// Helper methods to access protected properties
+supabase.getUrl = () => SUPABASE_URL;
