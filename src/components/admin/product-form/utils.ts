@@ -47,16 +47,16 @@ export const transformFormToProduct = (values: ProductFormValues): Product => {
     discountPrice: values.discountPrice,
     brand: values.brand,
     category: values.category,
-    compatibleModels: Array.isArray(values.compatibleModels) 
-      ? values.compatibleModels 
-      : values.compatibleModels.split(',').map(s => s.trim()),
+    compatibleModels: typeof values.compatibleModels === 'string'
+      ? values.compatibleModels.split(',').map(s => s.trim())
+      : values.compatibleModels,
     description: values.description,
-    features: Array.isArray(values.features) 
-      ? values.features 
-      : values.features.split('\n').filter(s => s.trim().length > 0),
-    images: Array.isArray(values.images) 
-      ? values.images 
-      : values.images.split(',').map(s => s.trim()),
+    features: typeof values.features === 'string'
+      ? values.features.split('\n').filter(s => s.trim().length > 0)
+      : values.features,
+    images: typeof values.images === 'string'
+      ? values.images.split(',').map(s => s.trim())
+      : values.images,
     stock: values.stock,
     isNew: values.isNew,
     isSpecialOrder: values.isSpecialOrder,
