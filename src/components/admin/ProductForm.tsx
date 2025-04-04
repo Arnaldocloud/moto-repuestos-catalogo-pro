@@ -55,33 +55,61 @@ interface ProductFormProps {
 }
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
+  // Prepare initialValues correctly
+  const getInitialValues = () => {
+    if (!initialData) {
+      return {
+        name: "",
+        sku: "",
+        price: 0,
+        brand: "",
+        category: "motor" as Category,
+        compatibleModels: "",
+        description: "",
+        features: "",
+        images: "",
+        stock: 0,
+        isNew: false,
+        isSpecialOrder: false,
+      };
+    }
+
+    return {
+      ...initialData,
+      compatibleModels: Array.isArray(initialData.compatibleModels) 
+        ? initialData.compatibleModels.join(", ")
+        : "",
+      features: Array.isArray(initialData.features) 
+        ? initialData.features.join("\n") 
+        : "",
+      images: Array.isArray(initialData.images) 
+        ? initialData.images.join(", ") 
+        : "",
+    };
+  };
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
-    defaultValues: initialData
-      ? {
-          ...initialData,
-          compatibleModels: initialData.compatibleModels.join(", "),
-          features: initialData.features.join("\n"),
-          images: initialData.images.join(", "),
-        }
-      : {
-          name: "",
-          sku: "",
-          price: 0,
-          brand: "",
-          category: "motor",
-          compatibleModels: "",
-          description: "",
-          features: "",
-          images: "",
-          stock: 0,
-          isNew: false,
-          isSpecialOrder: false,
-        },
+    defaultValues: getInitialValues(),
   });
 
   const handleSubmit = (values: ProductFormValues) => {
-    onSubmit(values as Product);
+    // Ensure proper transformation for onSubmit handler
+    const productData: Product = {
+      ...values,
+      id: values.id || String(Date.now()), // Fallback for new products
+      compatibleModels: Array.isArray(values.compatibleModels) 
+        ? values.compatibleModels 
+        : [],
+      features: Array.isArray(values.features) 
+        ? values.features 
+        : [],
+      images: Array.isArray(values.images) 
+        ? values.images 
+        : [],
+    };
+    
+    onSubmit(productData);
   };
 
   return (

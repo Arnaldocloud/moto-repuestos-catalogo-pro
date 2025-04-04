@@ -13,11 +13,19 @@ interface ProductCardProps {
   onQuickView: (product: Product) => void;
 }
 
+// Helper para formatear precio de forma segura
+const formatPrice = (price: number | undefined | null): string => {
+  if (price === undefined || price === null) {
+    return "0.00";
+  }
+  return price.toFixed(2);
+};
+
 const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   const { name, price, discountPrice, brand, sku, images, isNew, stock, compatibleModels } = product;
   
-  const hasDiscount = discountPrice !== undefined && discountPrice < price;
-  const discountPercentage = hasDiscount 
+  const hasDiscount = discountPrice !== undefined && discountPrice !== null && discountPrice < (price || 0);
+  const discountPercentage = hasDiscount && price 
     ? Math.round(((price - discountPrice!) / price) * 100) 
     : 0;
 
@@ -34,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
           {hasDiscount && (
             <Badge className="bg-primary hover:bg-primary/90">-{discountPercentage}%</Badge>
           )}
-          {stock <= 5 && stock > 0 && (
+          {stock !== undefined && stock <= 5 && stock > 0 && (
             <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500 hover:bg-yellow-500/20">
               ¡Últimas unidades!
             </Badge>
@@ -65,7 +73,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
         {/* Image */}
         <div className="relative aspect-square overflow-hidden">
           <img 
-            src={images[0]} 
+            src={images && images.length > 0 ? images[0] : '/placeholder.svg'} 
             alt={name} 
             className="w-full h-full object-cover product-image-zoom"
           />
@@ -123,11 +131,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
           <div className="mt-4 flex items-end gap-2">
             {hasDiscount ? (
               <>
-                <div className="text-xl font-bold text-primary">${discountPrice.toFixed(2)}</div>
-                <div className="text-sm text-muted-foreground line-through">${price.toFixed(2)}</div>
+                <div className="text-xl font-bold text-primary">${formatPrice(discountPrice)}</div>
+                <div className="text-sm text-muted-foreground line-through">${formatPrice(price)}</div>
               </>
             ) : (
-              <div className="text-xl font-bold">${price.toFixed(2)}</div>
+              <div className="text-xl font-bold">${formatPrice(price)}</div>
             )}
           </div>
         </div>
