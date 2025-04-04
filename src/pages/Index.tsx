@@ -9,8 +9,9 @@ import ProductGrid from "@/components/ProductGrid";
 import QuickViewModal from "@/components/QuickViewModal";
 import FloatingContact from "@/components/FloatingContact";
 import SpecialOrderForm from "@/components/SpecialOrderForm";
+import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
 import { Product } from "@/types/product";
-import { products, getProductsByCategory, searchProducts } from "@/data/products";
+import { useProducts } from "@/hooks/useProducts";
 import { Search, PlusCircle, BarChart3, TrendingUp, Truck } from "lucide-react";
 import { STORE_NAME } from "@/config/contact";
 
@@ -20,10 +21,14 @@ const Index = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState<boolean>(false);
   const [isSpecialOrderOpen, setIsSpecialOrderOpen] = useState<boolean>(false);
+  const [showDiagnostic, setShowDiagnostic] = useState<boolean>(false);
 
-  const filteredProducts = searchQuery 
-    ? searchProducts(searchQuery) 
-    : getProductsByCategory(selectedCategory);
+  const { data: products, isLoading, error } = useProducts({
+    category: selectedCategory !== "todos" ? selectedCategory : undefined,
+    search: searchQuery || undefined,
+  });
+
+  const filteredProducts = products || [];
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
@@ -52,6 +57,10 @@ const Index = () => {
     setIsSpecialOrderOpen(false);
   };
 
+  const toggleDiagnostic = () => {
+    setShowDiagnostic(!showDiagnostic);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header onSearch={handleSearch} />
@@ -60,14 +69,21 @@ const Index = () => {
       <div className="w-full bg-gradient-to-r from-motorcycle-dark to-motorcycle-red/90 text-white py-10 px-4 relative">
         <div className="container mx-auto flex flex-col items-center">
           {/* Add Admin Panel Button */}
-          <Link 
-            to="/admin" 
-            className="absolute top-4 right-4"
-          >
-            <Button variant="outline" size="icon" className="text-white border-white hover:bg-white/10">
-              <Settings className="h-5 w-5" />
+          <div className="absolute top-4 right-4 flex gap-2">
+            <Link to="/admin">
+              <Button variant="outline" size="icon" className="text-white border-white hover:bg-white/10">
+                <Settings className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-white border-white hover:bg-white/10"
+              onClick={toggleDiagnostic}
+            >
+              Diagnóstico
             </Button>
-          </Link>
+          </div>
 
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Catálogo de Repuestos de Motos
@@ -75,6 +91,13 @@ const Index = () => {
           <p className="text-lg text-center max-w-2xl mb-6">
             Encuentra los mejores repuestos para tu moto con calidad garantizada y envíos a todo el país
           </p>
+          
+          {/* Diagnostic Section */}
+          {showDiagnostic && (
+            <div className="w-full max-w-md mb-6 bg-white text-gray-900 rounded-lg">
+              <SupabaseConnectionTest />
+            </div>
+          )}
           
           {/* Metrics Section */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl mb-8">
@@ -142,14 +165,21 @@ const Index = () => {
                 }
               </h2>
               <div className="text-sm text-muted-foreground">
-                {filteredProducts.length} productos
+                {isLoading ? "Cargando..." : error ? "Error" : `${filteredProducts.length} productos`}
               </div>
             </div>
             
-            <ProductGrid 
-              products={filteredProducts}
-              onQuickView={handleQuickView}
-            />
+            {error ? (
+              <div className="p-4 rounded-md bg-destructive/10 text-destructive">
+                Error al cargar productos: {error instanceof Error ? error.message : "Error desconocido"}
+              </div>
+            ) : (
+              <ProductGrid 
+                products={filteredProducts}
+                onQuickView={handleQuickView}
+                isLoading={isLoading}
+              />
+            )}
           </div>
         </div>
       </main>
