@@ -1,65 +1,39 @@
-
 import React, { useState } from "react";
 import { Search, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { STORE_NAME } from "@/config/contact";
-
 interface HeaderProps {
   onSearch: (query: string) => void;
 }
-
-const Header: React.FC<HeaderProps> = ({ onSearch }) => {
+const Header: React.FC<HeaderProps> = ({
+  onSearch
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchQuery);
   };
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
-  return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  return <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between py-4">
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={toggleMenu}
-          >
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu}>
             {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </Button>
           
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary">
-              {STORE_NAME}
-            </span>
+            
           </div>
         </div>
 
-        <form
-          onSubmit={handleSearch}
-          className="hidden md:flex items-center w-1/3 relative"
-        >
-          <Input
-            type="search"
-            placeholder="Buscar repuestos..."
-            className="w-full"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Button
-            size="icon"
-            variant="ghost"
-            className="absolute right-0"
-            type="submit"
-          >
+        <form onSubmit={handleSearch} className="hidden md:flex items-center w-1/3 relative">
+          <Input type="search" placeholder="Buscar repuestos..." className="w-full" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+          <Button size="icon" variant="ghost" className="absolute right-0" type="submit">
             <Search className="h-4 w-4" />
           </Button>
         </form>
@@ -70,29 +44,14 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
       </div>
 
       {/* Mobile Search */}
-      {isMenuOpen && (
-        <div className="p-4 border-t md:hidden">
+      {isMenuOpen && <div className="p-4 border-t md:hidden">
           <form onSubmit={handleSearch} className="flex items-center w-full">
-            <Input
-              type="search"
-              placeholder="Buscar repuestos..."
-              className="w-full"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Button
-              size="icon"
-              variant="ghost"
-              className="ml-2"
-              type="submit"
-            >
+            <Input type="search" placeholder="Buscar repuestos..." className="w-full" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+            <Button size="icon" variant="ghost" className="ml-2" type="submit">
               <Search className="h-4 w-4" />
             </Button>
           </form>
-        </div>
-      )}
-    </header>
-  );
+        </div>}
+    </header>;
 };
-
 export default Header;
