@@ -12,20 +12,20 @@ interface ProductQueryParams {
 // Helper function to map database records to our Product type
 const mapDatabaseToProduct = (record: any): Product => {
   return {
-    id: record.id,
-    name: record.name,
-    sku: record.sku,
-    price: record.price,
-    discountPrice: record.discount_price,
-    brand: record.brand,
-    category: record.category,
-    compatibleModels: record.compatible_models || [],
-    description: record.description,
-    features: record.features || [],
-    images: record.images || [],
-    stock: record.stock,
-    isNew: record.is_new,
-    isSpecialOrder: record.is_special_order
+    id: record.id || "",
+    name: record.name || "",
+    sku: record.sku || "",
+    price: record.price !== null && record.price !== undefined ? Number(record.price) : 0,
+    discountPrice: record.discount_price !== null && record.discount_price !== undefined ? Number(record.discount_price) : undefined,
+    brand: record.brand || "",
+    category: record.category || "accesorios",
+    compatibleModels: Array.isArray(record.compatible_models) ? record.compatible_models : [],
+    description: record.description || "",
+    features: Array.isArray(record.features) ? record.features : [],
+    images: Array.isArray(record.images) ? record.images : [],
+    stock: record.stock !== null && record.stock !== undefined ? Number(record.stock) : 0,
+    isNew: !!record.is_new,
+    isSpecialOrder: !!record.is_special_order
   };
 };
 
