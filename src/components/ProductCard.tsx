@@ -16,12 +16,17 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   const { name, price, discountPrice, brand, sku, images, isNew, stock, compatibleModels } = product;
   
-  const hasDiscount = discountPrice !== undefined && discountPrice < price;
-  const discountPercentage = hasDiscount 
-    ? Math.round(((price - discountPrice!) / price) * 100) 
+  const hasDiscount = discountPrice !== undefined && discountPrice !== null && discountPrice < price;
+  const discountPercentage = hasDiscount && price > 0
+    ? Math.round(((price - (discountPrice || 0)) / price) * 100) 
     : 0;
 
   const whatsappLink = createWhatsAppLink(createProductQuery(name, sku));
+
+  // Safely format prices with null/undefined checks
+  const formatPrice = (value: number | null | undefined) => {
+    return value !== null && value !== undefined ? value.toFixed(2) : '0.00';
+  };
 
   return (
     <Card className="h-full product-card-hover overflow-hidden">
@@ -65,7 +70,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
         {/* Image */}
         <div className="relative aspect-square overflow-hidden">
           <img 
-            src={images[0]} 
+            src={images && images.length > 0 ? images[0] : "/placeholder.svg"} 
             alt={name} 
             className="w-full h-full object-cover product-image-zoom"
           />
@@ -123,11 +128,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
           <div className="mt-4 flex items-end gap-2">
             {hasDiscount ? (
               <>
-                <div className="text-xl font-bold text-primary">${discountPrice.toFixed(2)}</div>
-                <div className="text-sm text-muted-foreground line-through">${price.toFixed(2)}</div>
+                <div className="text-xl font-bold text-primary">${formatPrice(discountPrice)}</div>
+                <div className="text-sm text-muted-foreground line-through">${formatPrice(price)}</div>
               </>
             ) : (
-              <div className="text-xl font-bold">${price.toFixed(2)}</div>
+              <div className="text-xl font-bold">${formatPrice(price)}</div>
             )}
           </div>
         </div>
