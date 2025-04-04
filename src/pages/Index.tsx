@@ -13,7 +13,6 @@ import { Product } from "@/types/product";
 import { useProducts } from "@/hooks/useProducts";
 import { Search, PlusCircle, BarChart3, TrendingUp, Truck } from "lucide-react";
 import { STORE_NAME } from "@/config/contact";
-
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -21,47 +20,40 @@ const Index = () => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState<boolean>(false);
   const [isSpecialOrderOpen, setIsSpecialOrderOpen] = useState<boolean>(false);
   const [showDiagnostic, setShowDiagnostic] = useState<boolean>(false);
-
-  const { data: products, isLoading, error } = useProducts({
+  const {
+    data: products,
+    isLoading,
+    error
+  } = useProducts({
     category: selectedCategory !== "todos" ? selectedCategory : undefined,
-    search: searchQuery || undefined,
+    search: searchQuery || undefined
   });
-
   const filteredProducts = products || [];
-
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
     setSearchQuery("");
   };
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setSelectedCategory("todos");
   };
-
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);
     setIsQuickViewOpen(true);
   };
-
   const closeQuickView = () => {
     setIsQuickViewOpen(false);
   };
-
   const openSpecialOrderForm = () => {
     setIsSpecialOrderOpen(true);
   };
-
   const closeSpecialOrderForm = () => {
     setIsSpecialOrderOpen(false);
   };
-
   const toggleDiagnostic = () => {
     setShowDiagnostic(!showDiagnostic);
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header onSearch={handleSearch} />
       
       {/* Hero Section */}
@@ -74,14 +66,7 @@ const Index = () => {
                 <Settings className="h-5 w-5" />
               </Button>
             </Link>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="text-white border-white hover:bg-white/10"
-              onClick={toggleDiagnostic}
-            >
-              Diagnóstico
-            </Button>
+            
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
@@ -92,11 +77,9 @@ const Index = () => {
           </p>
           
           {/* Diagnostic Section */}
-          {showDiagnostic && (
-            <div className="w-full max-w-md mb-6 bg-white text-gray-900 rounded-lg">
+          {showDiagnostic && <div className="w-full max-w-md mb-6 bg-white text-gray-900 rounded-lg">
               <SupabaseConnectionTest />
-            </div>
-          )}
+            </div>}
           
           {/* Metrics Section */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl mb-8">
@@ -119,23 +102,13 @@ const Index = () => {
           
           {/* Mobile Search */}
           <div className="relative w-full max-w-md mb-4 md:hidden">
-            <input
-              type="search"
-              placeholder="Buscar repuestos..."
-              className="w-full rounded-full py-2 px-4 text-black pr-10"
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-            />
+            <input type="search" placeholder="Buscar repuestos..." className="w-full rounded-full py-2 px-4 text-black pr-10" value={searchQuery} onChange={e => handleSearch(e.target.value)} />
             <div className="absolute right-3 top-2.5 text-gray-500">
               <Search className="h-5 w-5" />
             </div>
           </div>
           
-          <Button 
-            size="lg" 
-            className="bg-white text-motorcycle-red hover:bg-gray-100"
-            onClick={openSpecialOrderForm}
-          >
+          <Button size="lg" className="bg-white text-motorcycle-red hover:bg-gray-100" onClick={openSpecialOrderForm}>
             <PlusCircle className="h-5 w-5 mr-2" />
             Solicitar repuesto especial
           </Button>
@@ -146,38 +119,23 @@ const Index = () => {
         <div className="flex flex-col md:flex-row gap-6">
           {/* Sidebar */}
           <aside className="w-full md:w-64 shrink-0">
-            <CategoryFilter 
-              selectedCategory={selectedCategory} 
-              onSelectCategory={handleCategorySelect}
-            />
+            <CategoryFilter selectedCategory={selectedCategory} onSelectCategory={handleCategorySelect} />
           </aside>
           
           {/* Main Content */}
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">
-                {searchQuery 
-                  ? `Resultados para "${searchQuery}"`
-                  : selectedCategory === 'todos' 
-                    ? 'Todos los productos' 
-                    : `Categoría: ${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}`
-                }
+                {searchQuery ? `Resultados para "${searchQuery}"` : selectedCategory === 'todos' ? 'Todos los productos' : `Categoría: ${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}`}
               </h2>
               <div className="text-sm text-muted-foreground">
                 {isLoading ? "Cargando..." : error ? "Error" : `${filteredProducts.length} productos`}
               </div>
             </div>
             
-            {error ? (
-              <div className="p-4 rounded-md bg-destructive/10 text-destructive">
+            {error ? <div className="p-4 rounded-md bg-destructive/10 text-destructive">
                 Error al cargar productos: {error instanceof Error ? error.message : "Error desconocido"}
-              </div>
-            ) : (
-              <ProductGrid 
-                products={filteredProducts}
-                onQuickView={handleQuickView}
-              />
-            )}
+              </div> : <ProductGrid products={filteredProducts} onQuickView={handleQuickView} />}
           </div>
         </div>
       </main>
@@ -207,20 +165,11 @@ const Index = () => {
       </footer>
       
       {/* Modals & Floating Elements */}
-      <QuickViewModal 
-        product={selectedProduct} 
-        isOpen={isQuickViewOpen}
-        onClose={closeQuickView}
-      />
+      <QuickViewModal product={selectedProduct} isOpen={isQuickViewOpen} onClose={closeQuickView} />
       
-      <SpecialOrderForm
-        isOpen={isSpecialOrderOpen}
-        onClose={closeSpecialOrderForm}
-      />
+      <SpecialOrderForm isOpen={isSpecialOrderOpen} onClose={closeSpecialOrderForm} />
       
       <FloatingContact />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
