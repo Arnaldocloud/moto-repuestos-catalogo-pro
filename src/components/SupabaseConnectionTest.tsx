@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, getSupabaseUrl, getSupabaseAuth } from "@/integrations/supabase/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Loader, CheckCircle, XCircle } from "lucide-react";
@@ -75,10 +75,10 @@ const SupabaseConnectionTest = () => {
 
       <div className="space-y-2">
         <div className="text-sm text-muted-foreground">
-          <strong>URL de Supabase:</strong> {supabase.getUrl()}
+          <strong>URL de Supabase:</strong> {getSupabaseUrl()}
         </div>
         <div className="text-sm text-muted-foreground">
-          <strong>Estado de la clave:</strong> {supabase.getAuth().getAccessToken() ? "Presente" : "No disponible"}
+          <strong>Estado de la clave:</strong> {getSupabaseAuth().getSession() ? "Presente" : "No disponible"}
         </div>
       </div>
 
