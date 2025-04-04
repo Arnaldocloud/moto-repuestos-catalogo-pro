@@ -109,7 +109,7 @@ export const searchProducts = async (query: string): Promise<Product[]> => {
 };
 
 export const getProduct = async (id: string): Promise<Product> => {
-  console.log("Fetching product with id:", id);
+  
   try {
     const { data, error } = await supabase
       .from("products")
@@ -128,7 +128,7 @@ export const getProduct = async (id: string): Promise<Product> => {
 };
 
 export const createProduct = async (product: Omit<Product, "id">): Promise<Product> => {
-  console.log("Creating product:", product);
+  
   try {
     const formattedProduct = formatProductForSupabase(product);
 
@@ -200,7 +200,7 @@ export const deleteProduct = async (id: string): Promise<boolean> => {
 };
 
 export const getCategories = async () => {
-  console.log("Fetching categories");
+  
   try {
     const { data, error } = await supabase.from("categories").select("*");
     
