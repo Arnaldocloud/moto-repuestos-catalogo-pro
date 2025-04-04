@@ -25,20 +25,23 @@ const FloatingContact: React.FC = () => {
                 aria-label="Contactar por WhatsApp"
               >
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-6 h-6"
-                >
-                  <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
-                  <path d="M9 10a0.5.0.5 0 0 0 1 0V9a0.5.0.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a0.5.0.5 0 0 0 0-1h-1a0.5.0.5 0 0 0 0 1" />
-                </svg>
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="w-6 h-6"
+>
+  
+  <path d="M3 21 L3.65 17.2 A9 9 0 1 1 7.05 20.1 L3 21" />
+  
+  
+  <path d="M9 10 A0.5 0.5 0 0 0 10 10 V9 A0.5 0.5 0 0 0 9 9 V10 A5 5 0 0 0 14 15 H15 A0.5 0.5 0 0 0 15 14 H14 A0.5 0.5 0 0 0 14 15" />
+</svg>
               </a>
             </Button>
           </TooltipTrigger>
