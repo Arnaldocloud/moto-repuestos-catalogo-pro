@@ -1,6 +1,6 @@
 
 import { Product } from "@/types/product";
-import { ProductFormDefaults } from "./schema";
+import { ProductFormDefaults, ProductFormValues } from "./schema";
 
 // Helper function to prepare default values for the form
 export const getDefaultValues = (initialData?: Product): ProductFormDefaults => {
