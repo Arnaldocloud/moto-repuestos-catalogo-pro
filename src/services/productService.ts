@@ -163,14 +163,13 @@ export const updateProduct = async (id: string, product: Partial<Product>): Prom
       .from("products")
       .update(formattedProduct)
       .eq("id", id)
-      .select()
-      .single();
+      .select();
     
     if (error) {
       return handleError(error, "Error updating product:");
     }
     
-    return formatSupabaseProduct(data);
+    return formatSupabaseProduct(data?.[0]);
   } catch (err) {
     return handleError(err, "Exception in updateProduct:");
   }
