@@ -70,7 +70,7 @@ const Index = () => {
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Catálogo de Repuestos de Motos
+            Moto Repuesto Pro
           </h1>
           <p className="text-lg text-center max-w-2xl mb-6">
             Encuentra los mejores repuestos para tu moto con calidad garantizada y envíos a todo el país
