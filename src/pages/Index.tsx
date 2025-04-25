@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Settings } from "lucide-react";
+import { Settings, Search, PlusCircle, BarChart3, TrendingUp, Truck } from "lucide-react";
 import Header from "@/components/Header";
 import CategoryFilter from "@/components/CategoryFilter";
 import ProductGrid from "@/components/ProductGrid";
@@ -11,8 +12,28 @@ import SpecialOrderForm from "@/components/SpecialOrderForm";
 import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
 import { Product } from "@/types/product";
 import { useProducts } from "@/hooks/useProducts";
-import { Search, PlusCircle, BarChart3, TrendingUp, Truck } from "lucide-react";
 import { STORE_NAME } from "@/config/contact";
+import { toast } from "sonner";
+
+// Componente para el Skeleton Loader
+const ProductGridSkeleton = () => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {Array(8).fill(null).map((_, index) => (
+        <div key={index} className="h-[400px] rounded-lg bg-muted animate-pulse">
+          <div className="h-1/2 bg-muted-foreground/10 rounded-t-lg"></div>
+          <div className="p-4 space-y-3">
+            <div className="h-4 w-1/3 bg-muted-foreground/10 rounded"></div>
+            <div className="h-6 w-3/4 bg-muted-foreground/10 rounded"></div>
+            <div className="h-4 w-1/2 bg-muted-foreground/10 rounded"></div>
+            <div className="h-8 w-1/3 bg-muted-foreground/10 rounded mt-6"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -20,6 +41,18 @@ const Index = () => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState<boolean>(false);
   const [isSpecialOrderOpen, setIsSpecialOrderOpen] = useState<boolean>(false);
   const [showDiagnostic, setShowDiagnostic] = useState<boolean>(false);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  
+  // Manejar el evento de scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const {
     data: products,
     isLoading,
@@ -28,32 +61,50 @@ const Index = () => {
     category: selectedCategory !== "todos" ? selectedCategory : undefined,
     search: searchQuery || undefined
   });
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Error al cargar productos", {
+        description: "Intenta de nuevo más tarde",
+      });
+    }
+  }, [error]);
+
   const filteredProducts = products || [];
+  
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
     setSearchQuery("");
   };
+  
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setSelectedCategory("todos");
   };
+  
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);
     setIsQuickViewOpen(true);
   };
+  
   const closeQuickView = () => {
     setIsQuickViewOpen(false);
   };
+  
   const openSpecialOrderForm = () => {
     setIsSpecialOrderOpen(true);
   };
+  
   const closeSpecialOrderForm = () => {
     setIsSpecialOrderOpen(false);
   };
+  
   const toggleDiagnostic = () => {
     setShowDiagnostic(!showDiagnostic);
   };
-  return <div className="min-h-screen flex flex-col">
+
+  return (
+    <div className="min-h-screen flex flex-col">
       <Header onSearch={handleSearch} />
       
       {/* Hero Section */}
@@ -62,38 +113,39 @@ const Index = () => {
           {/* Add Admin Panel Button */}
           <div className="absolute top-4 right-4 flex gap-2">
             <Link to="/admin">
-              <Button variant="outline" size="icon" className="text-white border-white hover:bg-white/10">
+              <Button variant="outline" size="icon" className="text-white border-white hover:bg-white/10 transition-colors">
                 <Settings className="h-5 w-5" />
               </Button>
             </Link>
-            
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Moto Repuesto Pro
+          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 animate-fade-in">
+            {STORE_NAME}
           </h1>
-          <p className="text-lg text-center max-w-2xl mb-6">
+          <p className="text-lg text-center max-w-2xl mb-6 animate-fade-in">
             Encuentra los mejores repuestos para tu moto con calidad garantizada y envíos a todo el país
           </p>
           
           {/* Diagnostic Section */}
-          {showDiagnostic && <div className="w-full max-w-md mb-6 bg-white text-gray-900 rounded-lg">
+          {showDiagnostic && (
+            <div className="w-full max-w-md mb-6 bg-white text-gray-900 rounded-lg">
               <SupabaseConnectionTest />
-            </div>}
+            </div>
+          )}
           
           {/* Metrics Section */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl mb-8">
-            <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center">
+            <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center hover:bg-white/20 transition-all hover:scale-105">
               <BarChart3 className="h-8 w-8 mb-2" />
               <div className="text-2xl font-bold">Calidad</div>
               <div className="text-sm">Repuestos garantizados</div>
             </div>
-            <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center">
+            <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center hover:bg-white/20 transition-all hover:scale-105">
               <TrendingUp className="h-8 w-8 mb-2" />
               <div className="text-2xl font-bold">Variedad</div>
               <div className="text-sm">Múltiples marcas y modelos</div>
             </div>
-            <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center">
+            <div className="bg-white/10 rounded-lg p-4 text-center backdrop-blur-sm flex flex-col items-center hover:bg-white/20 transition-all hover:scale-105">
               <Truck className="h-8 w-8 mb-2" />
               <div className="text-2xl font-bold">Envíos</div>
               <div className="text-sm">A todo el país</div>
@@ -102,13 +154,23 @@ const Index = () => {
           
           {/* Mobile Search */}
           <div className="relative w-full max-w-md mb-4 md:hidden">
-            <input type="search" placeholder="Buscar repuestos..." className="w-full rounded-full py-2 px-4 text-black pr-10" value={searchQuery} onChange={e => handleSearch(e.target.value)} />
+            <input 
+              type="search" 
+              placeholder="Buscar repuestos..." 
+              className="w-full rounded-full py-2 px-4 text-black pr-10" 
+              value={searchQuery} 
+              onChange={e => handleSearch(e.target.value)} 
+            />
             <div className="absolute right-3 top-2.5 text-gray-500">
               <Search className="h-5 w-5" />
             </div>
           </div>
           
-          <Button size="lg" className="bg-white text-motorcycle-red hover:bg-gray-100" onClick={openSpecialOrderForm}>
+          <Button 
+            size="lg" 
+            className="bg-white text-motorcycle-red hover:bg-gray-100 transition-all hover:scale-105"
+            onClick={openSpecialOrderForm}
+          >
             <PlusCircle className="h-5 w-5 mr-2" />
             Solicitar repuesto especial
           </Button>
@@ -133,9 +195,15 @@ const Index = () => {
               </div>
             </div>
             
-            {error ? <div className="p-4 rounded-md bg-destructive/10 text-destructive">
+            {error ? (
+              <div className="p-4 rounded-md bg-destructive/10 text-destructive">
                 Error al cargar productos: {error instanceof Error ? error.message : "Error desconocido"}
-              </div> : <ProductGrid products={filteredProducts} onQuickView={handleQuickView} />}
+              </div>
+            ) : isLoading ? (
+              <ProductGridSkeleton />
+            ) : (
+              <ProductGrid products={filteredProducts} onQuickView={handleQuickView} />
+            )}
           </div>
         </div>
       </main>
@@ -170,6 +238,19 @@ const Index = () => {
       <SpecialOrderForm isOpen={isSpecialOrderOpen} onClose={closeSpecialOrderForm} />
       
       <FloatingContact />
-    </div>;
+      
+      {/* Botón para volver arriba */}
+      <button 
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className={`fixed bottom-20 right-4 bg-motorcycle-red text-white rounded-full p-3 shadow-lg transition-all ${isScrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+        aria-label="Volver arriba"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m18 15-6-6-6 6"/>
+        </svg>
+      </button>
+    </div>
+  );
 };
+
 export default Index;

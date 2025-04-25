@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Share2, Eye, Tag } from "lucide-react";
 import { createWhatsAppLink, createProductQuery } from "@/config/contact";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
@@ -30,17 +31,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
     : 0;
 
   const whatsappLink = createWhatsAppLink(createProductQuery(name, sku));
+  
+  const handleShare = () => {
+    toast.success("Enlace copiado al portapapeles", {
+      description: "Ahora puedes compartirlo con quien quieras",
+      duration: 3000,
+    });
+  };
 
   return (
-    <Card className="h-full product-card-hover overflow-hidden">
+    <Card className="h-full product-card-hover overflow-hidden transition-all duration-300 hover:-translate-y-1">
       <CardContent className="p-0 relative">
         {/* Badges */}
         <div className="absolute top-2 left-2 z-20 flex flex-col gap-2">
           {isNew && (
-            <Badge className="bg-blue-500 hover:bg-blue-600">NUEVO</Badge>
+            <Badge className="bg-blue-500 hover:bg-blue-600 animate-pulse">NUEVO</Badge>
           )}
           {hasDiscount && (
-            <Badge className="bg-primary hover:bg-primary/90">-{discountPercentage}%</Badge>
+            <Badge className="bg-primary hover:bg-primary/90 animate-fade-in">-{discountPercentage}%</Badge>
           )}
           {stock !== undefined && stock <= 5 && stock > 0 && (
             <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500 hover:bg-yellow-500/20">
@@ -76,6 +84,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
             src={images && images.length > 0 ? images[0] : '/placeholder.svg'} 
             alt={name} 
             className="w-full h-full object-cover product-image-zoom"
+            loading="lazy"
           />
           
           {/* Quick view overlay */}
@@ -83,7 +92,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
             <Button 
               variant="secondary" 
               size="sm"
-              className="bg-white hover:bg-white/90 text-gray-800"
+              className="bg-white hover:bg-white/90 text-gray-800 scale-95 hover:scale-100 transition-transform"
               onClick={() => onQuickView(product)}
             >
               <Eye className="h-4 w-4 mr-2" />
@@ -143,8 +152,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
       
       <CardFooter className="p-4 pt-0 flex justify-between gap-2">
         <Button 
-          className="w-full"
+          className="w-full transition-all hover:shadow-md"
           disabled={stock === 0}
+          onClick={() => {
+            toast.success(`Consulta enviada: ${name}`, {
+              description: "Te responderemos a la brevedad",
+            });
+          }}
         >
           {stock === 0 ? "Agotado" : "Consultar"}
         </Button>
@@ -152,6 +166,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
           variant="outline" 
           size="icon" 
           asChild
+          className="hover:scale-105 transition-transform"
+          onClick={handleShare}
         >
           <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
             <Share2 className="h-4 w-4" />
