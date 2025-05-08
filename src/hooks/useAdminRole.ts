@@ -20,8 +20,11 @@ export const useAdminRole = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session || !session.user) {
+        console.log("No hay sesión activa o usuario");
         return false;
       }
+      
+      console.log("Verificando rol de administrador para el usuario:", session.user.id);
       
       // Consultar si el usuario tiene rol de administrador en la tabla user_roles
       const { data, error } = await supabase
@@ -31,11 +34,12 @@ export const useAdminRole = () => {
         .eq('role', 'admin')
         .single();
         
-      if (error || !data) {
+      if (error) {
         console.log("Error al verificar rol de administrador:", error);
         return false;
       }
       
+      console.log("Resultado de la consulta de rol:", data);
       return Boolean(data);
     } catch (error) {
       console.error("Error al verificar rol de administrador:", error);
@@ -49,6 +53,7 @@ export const useAdminRole = () => {
   const fetchAdminStatus = async () => {
     setLoading(true);
     const adminStatus = await checkAdminRole();
+    console.log("Estado de administrador:", adminStatus);
     setIsAdmin(adminStatus);
     setLoading(false);
   };
