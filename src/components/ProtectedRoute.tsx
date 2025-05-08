@@ -25,13 +25,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   // Si no es administrador, redirigir a la página principal
   if (!isAdmin) {
+    console.log("No tiene permisos de administrador, redirigiendo...");
     return <Navigate to="/" replace />;
   }
 
-  // Para propósitos de prueba/desarrollo, siempre permitir el acceso (comentar en producción)
-  // return <>{children}</>;
-
   // Si es administrador, mostrar el contenido protegido
+  console.log("Usuario con permisos de administrador, mostrando contenido protegido");
   return <>{children}</>;
 };
 
