@@ -18,7 +18,6 @@ interface ProductFormProps {
 }
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
-  // By explicitly typing the defaultValues as ProductFormValues, we ensure compatibility
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: getDefaultValues(initialData),

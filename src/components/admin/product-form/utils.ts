@@ -1,5 +1,5 @@
 
-import { Product, Category } from "@/types/product";
+import { Product } from "@/types/product";
 import { ProductFormValues, ProductFormDefaults } from "./schema";
 
 /**
@@ -33,7 +33,7 @@ export const getDefaultValues = (product?: Product): ProductFormDefaults => {
     price: product.price,
     discountPrice: product.discountPrice || 0,
     brand: product.brand,
-    category: product.category as Category,
+    category: product.category,
     compatibleModels: Array.isArray(product.compatibleModels) ? product.compatibleModels.join('\n') : '',
     description: product.description,
     features: Array.isArray(product.features) ? product.features.join('\n') : '',
@@ -64,17 +64,16 @@ export const transformFormToProduct = (values: ProductFormValues, existingId?: s
     isNew: values.isNew,
     isSpecialOrder: values.isSpecialOrder,
     // Process fields that can be strings or arrays
-    compatibleModels: typeof values.compatibleModels === 'string' 
+    compatibleModels: values.compatibleModels 
       ? values.compatibleModels.split('\n').filter(item => item.trim() !== '') 
-      : (values.compatibleModels || []),
-    features: typeof values.features === 'string'
+      : [],
+    features: values.features
       ? values.features.split('\n').filter(item => item.trim() !== '')
-      : (values.features || []),
-    images: typeof values.images === 'string'
+      : [],
+    images: values.images
       ? values.images.split('\n').filter(item => item.trim() !== '')
-      : (values.images || []),
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+      : [],
+    // Use the existing properties directly from the Product type
   };
   
   return product;

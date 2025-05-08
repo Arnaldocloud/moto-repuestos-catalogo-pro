@@ -14,10 +14,10 @@ export const productSchema = z.object({
     "motor", "frenos", "electricos", "suspension", "carroceria", 
     "aceites", "filtros", "transmision", "llantas", "accesorios"
   ]),
-  compatibleModels: z.string().transform(str => str.split(',').map(s => s.trim())),
+  compatibleModels: z.string(),
   description: z.string().min(10, { message: "La descripción debe tener al menos 10 caracteres" }),
-  features: z.string().transform(str => str.split('\n').filter(s => s.trim().length > 0)),
-  images: z.string().transform(str => str.split(',').map(s => s.trim())),
+  features: z.string(),
+  images: z.string(),
   stock: z.coerce.number().int().min(0, { message: "El stock debe ser un número entero positivo" }),
   isNew: z.boolean().default(false),
   isSpecialOrder: z.boolean().default(false),
