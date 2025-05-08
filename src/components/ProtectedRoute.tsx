@@ -28,6 +28,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return <Navigate to="/" replace />;
   }
 
+  // Para propósitos de prueba/desarrollo, siempre permitir el acceso (comentar en producción)
+  // return <>{children}</>;
+
   // Si es administrador, mostrar el contenido protegido
   return <>{children}</>;
 };

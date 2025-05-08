@@ -24,20 +24,19 @@ export const useAdminRole = () => {
       }
       
       // Consultar si el usuario tiene rol de administrador en la tabla user_roles
-      // Use the custom query approach to avoid TypeScript errors with table schemas
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', session.user.id)
         .eq('role', 'admin')
-        .maybeSingle();
+        .single();
         
       if (error || !data) {
         console.log("Error al verificar rol de administrador:", error);
         return false;
       }
       
-      return true;
+      return Boolean(data);
     } catch (error) {
       console.error("Error al verificar rol de administrador:", error);
       return false;
