@@ -126,19 +126,7 @@ const Index = () => {
         
         <div className="container mx-auto flex flex-col items-center relative z-20">
           {/* Add Admin Panel Button */}
-          <div className="absolute top-4 right-4 flex gap-2">
-            <Link to="/admin" aria-label="Ir al panel de administración">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="text-white border-white hover:bg-white/10 transition-colors"
-                aria-label="Panel de administración"
-              >
-                <Settings className="h-5 w-5" aria-hidden="true" />
-                <span className="sr-only">Panel de administración</span>
-              </Button>
-            </Link>
-          </div>
+         
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 animate-fade-in text-shadow-sm">
             {STORE_NAME}
           </h1>
