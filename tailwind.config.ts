@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -105,8 +104,30 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'pulse-scale': 'pulse-scale 2s ease-in-out infinite'
+			},
+			textShadow: {
+				sm: '0 1px 2px rgba(0, 0, 0, 0.8)',
+				DEFAULT: '0 2px 4px rgba(0, 0, 0, 0.8)',
+				lg: '0 8px 16px rgba(0, 0, 0, 0.8)',
+				xl: '0 10px 20px rgba(0, 0, 0, 0.9)',
+				'2xl': '0 12px 24px rgba(0, 0, 0, 0.95)',
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		function({ addUtilities, theme, variants }: any) {
+			const textShadows = theme('textShadow', {});
+			const textShadowUtilities = Object.keys(textShadows).reduce(
+				(utilities, key) => ({
+					...utilities,
+					[`.text-shadow${key === 'DEFAULT' ? '' : `-${key}`}`]: {
+						textShadow: textShadows[key],
+					},
+				}),
+				{}
+			);
+			addUtilities(textShadowUtilities, variants('textShadow'));
+		},
+	],
 } satisfies Config;
