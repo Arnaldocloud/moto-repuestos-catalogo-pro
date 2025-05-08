@@ -127,9 +127,15 @@ const Index = () => {
         <div className="container mx-auto flex flex-col items-center relative z-20">
           {/* Add Admin Panel Button */}
           <div className="absolute top-4 right-4 flex gap-2">
-            <Link to="/admin">
-              <Button variant="outline" size="icon" className="text-white border-white hover:bg-white/10 transition-colors">
-                <Settings className="h-5 w-5" />
+            <Link to="/admin" aria-label="Ir al panel de administración">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="text-white border-white hover:bg-white/10 transition-colors"
+                aria-label="Panel de administración"
+              >
+                <Settings className="h-5 w-5" aria-hidden="true" />
+                <span className="sr-only">Panel de administración</span>
               </Button>
             </Link>
           </div>
@@ -182,8 +188,9 @@ const Index = () => {
           
           <Button 
             size="lg" 
-            className="bg-white text-motorcycle-red hover:bg-gray-100 transition-all hover:scale-105"
+            className="bg-white text-motorcycle-dark hover:bg-gray-100 transition-all hover:scale-105 font-semibold"
             onClick={openSpecialOrderForm}
+            aria-label="Solicitar repuesto especial"
           >
             <PlusCircle className="h-5 w-5 mr-2" />
             Solicitar repuesto especial
