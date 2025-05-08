@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -108,8 +107,24 @@ const Index = () => {
       <Header onSearch={handleSearch} />
       
       {/* Hero Section */}
-      <div className="w-full bg-gradient-to-r from-motorcycle-dark to-motorcycle-red/90 text-white py-10 px-4 relative">
-        <div className="container mx-auto flex flex-col items-center">
+      <div className="w-full bg-gradient-to-r from-motorcycle-dark to-motorcycle-red/90 text-white py-10 px-4 relative overflow-hidden">
+        {/* Video de fondo */}
+        <div className="absolute inset-0 w-full h-full z-0">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            className="w-full h-full object-cover"
+            poster="/images/motorcycle-poster.jpg" // Imagen de respaldo mientras carga el video
+          >
+            <source src="/videos/motorcycle-background.mp4" type="video/mp4" />
+            Tu navegador no soporta videos HTML5.
+          </video>
+          {/* Overlay para mejorar legibilidad del texto - Gradiente en lugar de color plano */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/40 z-10"></div>
+        </div>
+        
+        <div className="container mx-auto flex flex-col items-center relative z-20">
           {/* Add Admin Panel Button */}
           <div className="absolute top-4 right-4 flex gap-2">
             <Link to="/admin">
@@ -118,10 +133,10 @@ const Index = () => {
               </Button>
             </Link>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 animate-fade-in text-shadow-sm">
             {STORE_NAME}
           </h1>
-          <p className="text-lg text-center max-w-2xl mb-6 animate-fade-in">
+          <p className="text-lg text-center max-w-2xl mb-6 animate-fade-in text-shadow-sm">
             Encuentra los mejores repuestos para tu moto con calidad garantizada y envíos a todo el país
           </p>
           
@@ -226,7 +241,7 @@ const Index = () => {
           </div>
           
           <div className="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400 text-sm">
-            © {new Date().getFullYear()} {STORE_NAME}. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} {STORE_NAME}. Todos los derechos reservados.
           </div>
         </div>
       </footer>
