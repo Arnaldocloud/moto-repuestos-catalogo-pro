@@ -22,8 +22,17 @@ const Header: React.FC<HeaderProps> = ({
   return <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between py-4">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu}>
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden relative p-2" 
+            onClick={toggleMenu}
+            aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            {isMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
+            <span className="sr-only">{isMenuOpen ? "Cerrar menú" : "Abrir menú"}</span>
           </Button>
           
           <div className="flex items-center gap-2">
@@ -57,29 +66,51 @@ const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Mobile Search */}
-      {isMenuOpen && <div className="p-4 border-t md:hidden">
-          <form onSubmit={handleSearch} className="flex items-center w-full">
-            <Input 
-              type="search" 
-              placeholder="Buscar repuestos..." 
-              className="w-full" 
-              value={searchQuery} 
-              onChange={e => setSearchQuery(e.target.value)} 
-              aria-label="Buscar repuestos"
-            />
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="ml-2" 
-              type="submit"
-              aria-label="Buscar"
-            >
-              <Search className="h-4 w-4" />
-              <span className="sr-only">Buscar</span>
-            </Button>
-          </form>
-        </div>}
+      {/* Mobile Menu - Improved for better UX */}
+      {isMenuOpen && (
+        <div 
+          id="mobile-menu"
+          className="fixed inset-0 top-16 z-30 bg-background/95 backdrop-blur-sm animate-in slide-in-from-top-5 md:hidden"
+        >
+          <div className="container flex flex-col gap-6 p-6">
+            <form onSubmit={handleSearch} className="flex items-center w-full">
+              <Input 
+                type="search" 
+                placeholder="Buscar repuestos..." 
+                className="w-full" 
+                value={searchQuery} 
+                onChange={e => setSearchQuery(e.target.value)} 
+                aria-label="Buscar repuestos"
+              />
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="ml-2" 
+                type="submit"
+                aria-label="Buscar"
+              >
+                <Search className="h-4 w-4" aria-hidden="true" />
+                <span className="sr-only">Buscar</span>
+              </Button>
+            </form>
+            
+            <nav className="flex flex-col gap-4">
+              <a href="/" className="flex items-center py-2 text-lg font-medium border-b border-border">
+                Inicio
+              </a>
+              <a href="/categorias" className="flex items-center py-2 text-lg font-medium border-b border-border">
+                Categorías
+              </a>
+              <a href="/contacto" className="flex items-center py-2 text-lg font-medium border-b border-border">
+                Contacto
+              </a>
+              <a href="/admin" className="flex items-center py-2 text-lg font-medium border-b border-border">
+                Administración
+              </a>
+            </nav>
+          </div>
+        </div>
+      )}
     </header>;
 };
 export default Header;

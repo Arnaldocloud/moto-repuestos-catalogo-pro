@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Product } from "@/types/product";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -45,18 +44,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
         {/* Badges */}
         <div className="absolute top-2 left-2 z-20 flex flex-col gap-2">
           {isNew && (
-            <Badge className="bg-blue-500 hover:bg-blue-600 animate-pulse">NUEVO</Badge>
+            <Badge className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">NUEVO</Badge>
           )}
           {hasDiscount && (
-            <Badge className="bg-primary hover:bg-primary/90 animate-fade-in">-{discountPercentage}%</Badge>
+            <Badge className="bg-primary text-primary hover:bg-primary/90 font-semibold animate-fade-in">-{discountPercentage}%</Badge>
           )}
           {stock !== undefined && stock <= 5 && stock > 0 && (
-            <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500 hover:bg-yellow-500/20">
+            <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-500 hover:bg-yellow-200 font-semibold">
               ¡Últimas unidades!
             </Badge>
           )}
           {stock === 0 && (
-            <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500 hover:bg-red-500/20">
+            <Badge variant="outline" className="bg-red-100 text-red-800 border-red-500 hover:bg-red-200 font-semibold">
               Agotado
             </Badge>
           )}
@@ -68,7 +67,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">
-                  <Tag className="h-3 w-3 mr-1" /> {sku}
+                  <Tag className="h-3 w-3 mr-1" aria-hidden="true" /> {sku}
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
@@ -85,6 +84,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
             alt={name} 
             className="w-full h-full object-cover product-image-zoom"
             loading="lazy"
+            width="400"
+            height="400"
           />
           
           {/* Quick view overlay */}
@@ -92,10 +93,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
             <Button 
               variant="secondary" 
               size="sm"
-              className="bg-white hover:bg-white/90 text-gray-800 scale-95 hover:scale-100 transition-transform"
+              className="bg-white hover:bg-white/90 text-gray-800 scale-95 hover:scale-100 transition-transform sm:text-sm md:text-base py-2 px-4"
               onClick={() => onQuickView(product)}
+              aria-label={`Vista rápida de ${name}`}
             >
-              <Eye className="h-4 w-4 mr-2" />
+              <Eye className="h-4 w-4 mr-2" aria-hidden="true" />
               Vista rápida
             </Button>
           </div>
@@ -150,15 +152,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
         </div>
       </CardContent>
       
-      <CardFooter className="p-4 pt-0 flex justify-between gap-2">
+      <CardFooter className="p-4 pt-0 flex justify-between gap-2 flex-wrap sm:flex-nowrap">
         <Button 
-          className="w-full transition-all hover:shadow-md"
+          className="w-full transition-all hover:shadow-md font-semibold min-h-[44px] text-sm sm:text-base"
           disabled={stock === 0}
           onClick={() => {
             toast.success(`Consulta enviada: ${name}`, {
               description: "Te responderemos a la brevedad",
             });
           }}
+          aria-label={stock === 0 ? `Producto agotado: ${name}` : `Consultar sobre ${name}`}
         >
           {stock === 0 ? "Agotado" : "Consultar"}
         </Button>
@@ -166,11 +169,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
           variant="outline" 
           size="icon" 
           asChild
-          className="hover:scale-105 transition-transform"
+          className="hover:scale-105 transition-transform min-w-[44px] min-h-[44px] flex-shrink-0"
           onClick={handleShare}
         >
-          <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-            <Share2 className="h-4 w-4" />
+          <a 
+            href={whatsappLink} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label={`Compartir ${name} por WhatsApp`}
+          >
+            <Share2 className="h-4 w-4" aria-hidden="true" />
+            <span className="sr-only">Compartir por WhatsApp</span>
           </a>
         </Button>
       </CardFooter>
