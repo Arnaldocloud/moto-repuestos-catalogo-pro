@@ -21,12 +21,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
   // By explicitly typing the defaultValues as ProductFormValues, we ensure compatibility
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
-    defaultValues: getDefaultValues(initialData) as unknown as ProductFormValues,
+    defaultValues: getDefaultValues(initialData),
   });
 
   const handleSubmit = (values: ProductFormValues) => {
     // Transform the form data to a Product object
-    const productData = transformFormToProduct(values);
+    const productData = transformFormToProduct(values, initialData?.id);
     onSubmit(productData);
   };
 
