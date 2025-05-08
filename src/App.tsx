@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Lazy load pages
 const Index = lazy(() => import("./pages/Index"));
@@ -30,7 +31,11 @@ function App() {
         <Suspense fallback={<div className="p-8 text-center">Cargando...</div>}>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            } />
             <Route path="/404" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>

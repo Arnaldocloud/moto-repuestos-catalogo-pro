@@ -1,24 +1,33 @@
+
 import React, { useState } from "react";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { STORE_NAME } from "@/config/contact";
+import { Link } from "react-router-dom";
+import { useAdminRole } from "@/hooks/useAdminRole";
+
 interface HeaderProps {
   onSearch: (query: string) => void;
 }
+
 const Header: React.FC<HeaderProps> = ({
   onSearch
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAdmin, loading } = useAdminRole();
+  
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchQuery);
   };
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+  
   return <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between py-4">
         <div className="flex items-center gap-2">
@@ -36,7 +45,9 @@ const Header: React.FC<HeaderProps> = ({
           </Button>
           
           <div className="flex items-center gap-2">
-            
+            <Link to="/" className="flex items-center font-bold text-xl">
+              {STORE_NAME}
+            </Link>
           </div>
         </div>
 
@@ -62,6 +73,16 @@ const Header: React.FC<HeaderProps> = ({
         </form>
 
         <div className="flex items-center gap-2">
+          {loading ? (
+            <span className="text-sm text-muted-foreground animate-pulse">Cargando...</span>
+          ) : isAdmin ? (
+            <Button variant="outline" size="sm" asChild className="hidden md:flex">
+              <Link to="/admin">
+                <Shield className="mr-2 h-4 w-4" />
+                Administración
+              </Link>
+            </Button>
+          ) : null}
           <ThemeSwitcher />
         </div>
       </div>
@@ -95,22 +116,26 @@ const Header: React.FC<HeaderProps> = ({
             </form>
             
             <nav className="flex flex-col gap-4">
-              <a href="/" className="flex items-center py-2 text-lg font-medium border-b border-border">
+              <Link to="/" className="flex items-center py-2 text-lg font-medium border-b border-border">
                 Inicio
-              </a>
-              <a href="/categorias" className="flex items-center py-2 text-lg font-medium border-b border-border">
+              </Link>
+              <Link to="/categorias" className="flex items-center py-2 text-lg font-medium border-b border-border">
                 Categorías
-              </a>
-              <a href="/contacto" className="flex items-center py-2 text-lg font-medium border-b border-border">
+              </Link>
+              <Link to="/contacto" className="flex items-center py-2 text-lg font-medium border-b border-border">
                 Contacto
-              </a>
-              <a href="/admin" className="flex items-center py-2 text-lg font-medium border-b border-border">
-                Administración
-              </a>
+              </Link>
+              {isAdmin && (
+                <Link to="/admin" className="flex items-center py-2 text-lg font-medium border-b border-border">
+                  <Shield className="mr-2 h-5 w-5" />
+                  Administración
+                </Link>
+              )}
             </nav>
           </div>
         </div>
       )}
     </header>;
 };
+
 export default Header;
