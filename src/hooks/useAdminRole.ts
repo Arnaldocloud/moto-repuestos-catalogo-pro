@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
  * @returns Un objeto con el estado de administrador y si está cargando
  */
 export const useAdminRole = () => {
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   /**
