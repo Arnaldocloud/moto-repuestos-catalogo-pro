@@ -13,6 +13,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Lazy load pages
 const Index = lazy(() => import("./pages/Index"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Auth = lazy(() => import("./pages/Auth"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Create a client
@@ -36,6 +37,7 @@ function App() {
                 <Admin />
               </ProtectedRoute>
             } />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/404" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>

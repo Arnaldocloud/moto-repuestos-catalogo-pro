@@ -1,12 +1,14 @@
 
-import React, { useState } from "react";
-import { Search, Menu, X, Shield } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Search, Menu, X, Shield, LogIn, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { STORE_NAME } from "@/config/contact";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAdminRole } from "@/hooks/useAdminRole";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -18,6 +20,53 @@ const Header: React.FC<HeaderProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAdmin, loading } = useAdminRole();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      setIsAuthenticated(!!data.session);
+    };
+    
+    checkAuth();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setIsAuthenticated(!!session);
+      }
+    );
+    
+    return () => subscription.unsubscribe();
+  }, []);
+  
+  const handleLogout = async () => {
+    try {
+      // Función para limpiar el estado de autenticación
+      const cleanupAuthState = () => {
+        // Eliminar todos los tokens de autenticación de Supabase
+        Object.keys(localStorage).forEach((key) => {
+          if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+            localStorage.removeItem(key);
+          }
+        });
+      };
+      
+      // Limpiar estado de autenticación
+      cleanupAuthState();
+      
+      // Cerrar sesión
+      await supabase.auth.signOut({ scope: 'global' });
+      
+      toast.success("Has cerrado sesión correctamente");
+      
+      // Forzar recarga completa para asegurar estado limpio
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+      toast.error("Error al cerrar sesión");
+    }
+  };
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,14 +124,29 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2">
           {loading ? (
             <span className="text-sm text-muted-foreground animate-pulse">Cargando...</span>
-          ) : isAdmin ? (
-            <Button variant="outline" size="sm" asChild className="hidden md:flex">
-              <Link to="/admin">
-                <Shield className="mr-2 h-4 w-4" />
-                Administración
+          ) : isAuthenticated ? (
+            <>
+              {isAdmin && (
+                <Button variant="outline" size="sm" asChild className="hidden md:flex">
+                  <Link to="/admin">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Administración
+                  </Link>
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden md:flex">
+                <LogOut className="mr-2 h-4 w-4" />
+                Cerrar sesión
+              </Button>
+            </>
+          ) : (
+            <Button variant="default" size="sm" asChild className="hidden md:flex">
+              <Link to="/auth">
+                <LogIn className="mr-2 h-4 w-4" />
+                Iniciar sesión
               </Link>
             </Button>
-          ) : null}
+          )}
           <ThemeSwitcher />
         </div>
       </div>
@@ -125,10 +189,26 @@ const Header: React.FC<HeaderProps> = ({
               <Link to="/contacto" className="flex items-center py-2 text-lg font-medium border-b border-border">
                 Contacto
               </Link>
-              {isAdmin && (
-                <Link to="/admin" className="flex items-center py-2 text-lg font-medium border-b border-border">
-                  <Shield className="mr-2 h-5 w-5" />
-                  Administración
+              {isAuthenticated ? (
+                <>
+                  {isAdmin && (
+                    <Link to="/admin" className="flex items-center py-2 text-lg font-medium border-b border-border">
+                      <Shield className="mr-2 h-5 w-5" />
+                      Administración
+                    </Link>
+                  )}
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center py-2 text-lg font-medium border-b border-border"
+                  >
+                    <LogOut className="mr-2 h-5 w-5" />
+                    Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                <Link to="/auth" className="flex items-center py-2 text-lg font-medium border-b border-border">
+                  <LogIn className="mr-2 h-5 w-5" />
+                  Iniciar sesión
                 </Link>
               )}
             </nav>
