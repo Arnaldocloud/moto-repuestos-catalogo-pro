@@ -12,8 +12,25 @@ if (!VITE_SUPABASE_URL || !VITE_SUPABASE_ANON_KEY) {
 
 export const supabase = createClient<Database>(
   VITE_SUPABASE_URL,
-  VITE_SUPABASE_ANON_KEY
+  VITE_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      storage: localStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+    }
+  }
 );
 
 export const getSupabaseUrl = () => VITE_SUPABASE_URL;
 export const getSupabaseAuth = () => supabase.auth;
+
+// Función para limpiar el estado de autenticación
+export const cleanupAuthState = () => {
+  // Eliminar todos los tokens de autenticación de Supabase
+  Object.keys(localStorage).forEach((key) => {
+    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+      localStorage.removeItem(key);
+    }
+  });
+};
