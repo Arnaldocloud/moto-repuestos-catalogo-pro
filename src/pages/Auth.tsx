@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, cleanupAuthState } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -36,6 +35,13 @@ const Auth = () => {
       // Limpiar cualquier estado de autenticación anterior
       cleanupAuthState();
       
+      // Cerrar sesión globalmente primero para evitar conflictos
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continuar aunque falle
+      }
+      
       // Intentar iniciar sesión
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -64,6 +70,13 @@ const Auth = () => {
       // Limpiar cualquier estado de autenticación anterior
       cleanupAuthState();
       
+      // Cerrar sesión globalmente primero para evitar conflictos
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continuar aunque falle
+      }
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password
@@ -79,16 +92,6 @@ const Auth = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Función para limpiar el estado de autenticación
-  const cleanupAuthState = () => {
-    // Eliminar todos los tokens de autenticación de Supabase
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        localStorage.removeItem(key);
-      }
-    });
   };
 
   return (

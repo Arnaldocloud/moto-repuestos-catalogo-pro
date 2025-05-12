@@ -26,13 +26,11 @@ export const useAdminRole = () => {
       
       console.log("Verificando rol de administrador para el usuario:", session.user.id);
       
-      // Consultar si el usuario tiene rol de administrador en la tabla user_roles
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', session.user.id)
-        .eq('role', 'admin')
-        .single();
+      // Consultar directamente la función de seguridad que creamos en la base de datos
+      const { data, error } = await supabase.rpc('get_user_role', { 
+        _user_id: session.user.id,
+        _role: 'admin'
+      });
         
       if (error) {
         console.log("Error al verificar rol de administrador:", error);

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Search, Menu, X, Shield, LogIn, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -7,14 +6,14 @@ import ThemeSwitcher from "./ThemeSwitcher";
 import { STORE_NAME } from "@/config/contact";
 import { Link, useNavigate } from "react-router-dom";
 import { useAdminRole } from "@/hooks/useAdminRole";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, cleanupAuthState } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({
+const Header: React.FC<any> = ({
   onSearch
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,21 +41,15 @@ const Header: React.FC<HeaderProps> = ({
   
   const handleLogout = async () => {
     try {
-      // Función para limpiar el estado de autenticación
-      const cleanupAuthState = () => {
-        // Eliminar todos los tokens de autenticación de Supabase
-        Object.keys(localStorage).forEach((key) => {
-          if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-            localStorage.removeItem(key);
-          }
-        });
-      };
-      
       // Limpiar estado de autenticación
       cleanupAuthState();
       
-      // Cerrar sesión
-      await supabase.auth.signOut({ scope: 'global' });
+      // Cerrar sesión globalmente
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        console.error("Error al cerrar sesión global:", err);
+      }
       
       toast.success("Has cerrado sesión correctamente");
       
