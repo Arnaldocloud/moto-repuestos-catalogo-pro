@@ -30,7 +30,7 @@ const Admin: React.FC = () => {
       
       <Separator className="my-6" />
       
-      <Tabs defaultValue="products" value={activeTab} onValueChange={setActiveTab}>
+      <Tabs defaultValue="products" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full md:w-auto grid-cols-2 md:grid-cols-none md:flex mb-8">
           <TabsTrigger value="products">Productos</TabsTrigger>
           <TabsTrigger value="categories">Categorías</TabsTrigger>
