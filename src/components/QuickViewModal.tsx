@@ -47,7 +47,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, isOpen, onClos
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto" closeButton={false}>
         <DialogHeader>
           <div className="flex justify-between items-center">
             <DialogTitle className="text-xl">{name}</DialogTitle>

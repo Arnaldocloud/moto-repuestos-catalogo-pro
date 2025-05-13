@@ -3,6 +3,8 @@ import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Product, Category, categoryNames } from "@/types/product";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ProductDetailsDialogProps {
   isOpen: boolean;
@@ -17,11 +19,23 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
 }) => {
   if (!product) return null;
 
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[600px]" closeButton={false}>
+        <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle>Detalles del Producto</DialogTitle>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleClose}
+            className="h-6 w-6"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </DialogHeader>
         
         <div className="space-y-4 mt-4">
