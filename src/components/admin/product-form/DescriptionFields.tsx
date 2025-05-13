@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import ImageUploader from "./ImageUploader";
 
 interface DescriptionFieldsProps {
   control: Control<ProductFormValues>;
@@ -86,15 +87,17 @@ Incluye anillos de compresión y aceite"
         name="images"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>URLs de imágenes</FormLabel>
+            <FormLabel>Imágenes del producto</FormLabel>
             <FormControl>
-              <Input
-                placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
-                {...field}
+              <ImageUploader
+                images={field.value ? field.value.split('\n').filter(url => url.trim() !== '') : []}
+                onChange={(images) => {
+                  field.onChange(images.join('\n'));
+                }}
               />
             </FormControl>
             <FormDescription>
-              Separa las URLs con comas
+              Sube imágenes directamente o usa la cámara para tomar fotos del producto
             </FormDescription>
             <FormMessage />
           </FormItem>
