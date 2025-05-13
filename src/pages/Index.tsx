@@ -117,7 +117,6 @@ const Index = () => {
             className="w-full h-full object-cover"
             poster="/images/motorcycle-poster.jpg" // Imagen de respaldo mientras carga el video
           >
-            <source src="/videos/motorcycle-background.mp4" type="video/mp4" />
             Tu navegador no soporta videos HTML5.
           </video>
           {/* Overlay para mejorar legibilidad del texto - Gradiente en lugar de color plano */}
