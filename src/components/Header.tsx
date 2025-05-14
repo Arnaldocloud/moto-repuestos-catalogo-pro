@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Search, Menu, X, Shield, LogIn, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -144,11 +145,11 @@ const Header: React.FC<any> = ({
         </div>
       </div>
 
-      {/* Mobile Menu - Improved for better UX */}
+      {/* Mobile Menu - Mejorado con fondo sólido y mejor contraste */}
       {isMenuOpen && (
         <div 
           id="mobile-menu"
-          className="fixed inset-0 top-16 z-30 bg-background/95 backdrop-blur-sm animate-in slide-in-from-top-5 md:hidden"
+          className="fixed inset-0 top-16 z-30 bg-background border-t shadow-lg animate-in slide-in-from-top-5 md:hidden"
         >
           <div className="container flex flex-col gap-6 p-6">
             <form onSubmit={handleSearch} className="flex items-center w-full">
@@ -173,33 +174,33 @@ const Header: React.FC<any> = ({
             </form>
             
             <nav className="flex flex-col gap-4">
-              <Link to="/" className="flex items-center py-2 text-lg font-medium border-b border-border">
+              <Link to="/" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
                 Inicio
               </Link>
-              <Link to="/categorias" className="flex items-center py-2 text-lg font-medium border-b border-border">
+              <Link to="/categorias" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
                 Categorías
               </Link>
-              <Link to="/contacto" className="flex items-center py-2 text-lg font-medium border-b border-border">
+              <Link to="/contacto" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
                 Contacto
               </Link>
               {isAuthenticated ? (
                 <>
                   {isAdmin && (
-                    <Link to="/admin" className="flex items-center py-2 text-lg font-medium border-b border-border">
+                    <Link to="/admin" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
                       <Shield className="mr-2 h-5 w-5" />
                       Administración
                     </Link>
                   )}
                   <button 
                     onClick={handleLogout}
-                    className="flex items-center py-2 text-lg font-medium border-b border-border"
+                    className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3"
                   >
                     <LogOut className="mr-2 h-5 w-5" />
                     Cerrar sesión
                   </button>
                 </>
               ) : (
-                <Link to="/auth" className="flex items-center py-2 text-lg font-medium border-b border-border">
+                <Link to="/auth" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
                   <LogIn className="mr-2 h-5 w-5" />
                   Iniciar sesión
                 </Link>
