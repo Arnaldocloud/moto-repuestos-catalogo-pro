@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Search, Menu, X, Shield, LogIn, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -77,7 +76,7 @@ const Header: React.FC<any> = ({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden relative p-2" 
+            className="md:hidden relative p-2 hover:bg-primary hover:text-primary-foreground" 
             onClick={toggleMenu}
             aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={isMenuOpen}
@@ -145,63 +144,73 @@ const Header: React.FC<any> = ({
         </div>
       </div>
 
-      {/* Mobile Menu - Mejorado con fondo sólido y mejor contraste */}
+      {/* Mobile Menu - Completamente rediseñado para mejor visibilidad */}
       {isMenuOpen && (
         <div 
           id="mobile-menu"
-          className="fixed inset-0 top-16 z-30 bg-background border-t shadow-lg animate-in slide-in-from-top-5 md:hidden"
+          className="fixed inset-0 top-16 z-50 bg-background dark:bg-background/95 md:hidden"
         >
-          <div className="container flex flex-col gap-6 p-6">
+          <div className="container flex flex-col gap-6 p-6 bg-card shadow-lg rounded-b-lg border-x border-b border-border">
             <form onSubmit={handleSearch} className="flex items-center w-full">
-              <Input 
-                type="search" 
-                placeholder="Buscar repuestos..." 
-                className="w-full" 
-                value={searchQuery} 
-                onChange={e => setSearchQuery(e.target.value)} 
-                aria-label="Buscar repuestos"
-              />
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  type="search" 
+                  placeholder="Buscar repuestos..." 
+                  className="w-full pl-10 bg-background border-primary/30 focus-visible:ring-primary" 
+                  value={searchQuery} 
+                  onChange={e => setSearchQuery(e.target.value)} 
+                  aria-label="Buscar repuestos"
+                />
+              </div>
               <Button 
-                size="icon" 
-                variant="ghost" 
-                className="ml-2" 
+                variant="default"
+                size="sm"
+                className="ml-2 bg-primary hover:bg-primary/80" 
                 type="submit"
                 aria-label="Buscar"
               >
-                <Search className="h-4 w-4" aria-hidden="true" />
+                Buscar
                 <span className="sr-only">Buscar</span>
               </Button>
             </form>
             
-            <nav className="flex flex-col gap-4">
-              <Link to="/" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
+            <nav className="flex flex-col gap-2">
+              <div className="py-2 px-3 font-semibold text-sm text-muted-foreground uppercase tracking-wider border-b border-border mb-2">
+                Navegación
+              </div>
+              
+              <Link to="/" className="flex items-center py-4 text-lg font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors">
                 Inicio
               </Link>
-              <Link to="/categorias" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
+              <Link to="/categorias" className="flex items-center py-4 text-lg font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors">
                 Categorías
               </Link>
-              <Link to="/contacto" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
+              <Link to="/contacto" className="flex items-center py-4 text-lg font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors">
                 Contacto
               </Link>
+              
+              <div className="h-px bg-border my-2"></div>
+              
               {isAuthenticated ? (
                 <>
                   {isAdmin && (
-                    <Link to="/admin" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
-                      <Shield className="mr-2 h-5 w-5" />
+                    <Link to="/admin" className="flex items-center py-4 text-lg font-medium hover:bg-primary/10 rounded-md px-3 transition-colors text-primary">
+                      <Shield className="mr-3 h-5 w-5" />
                       Administración
                     </Link>
                   )}
                   <button 
                     onClick={handleLogout}
-                    className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3"
+                    className="flex items-center py-4 text-lg font-medium w-full text-left hover:bg-destructive/10 text-destructive rounded-md px-3 transition-colors"
                   >
-                    <LogOut className="mr-2 h-5 w-5" />
+                    <LogOut className="mr-3 h-5 w-5" />
                     Cerrar sesión
                   </button>
                 </>
               ) : (
-                <Link to="/auth" className="flex items-center py-3 text-lg font-medium border-b border-border hover:bg-accent rounded-md px-3">
-                  <LogIn className="mr-2 h-5 w-5" />
+                <Link to="/auth" className="flex items-center py-4 text-lg font-medium bg-primary text-primary-foreground rounded-md px-3 transition-colors justify-center shadow-sm hover:bg-primary/90">
+                  <LogIn className="mr-3 h-5 w-5" />
                   Iniciar sesión
                 </Link>
               )}
