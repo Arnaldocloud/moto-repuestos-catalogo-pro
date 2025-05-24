@@ -25,3 +25,35 @@ export const CONTACT_INFO = {
     warranty: "Garantía en todos los productos"
   }
 };
+
+// Utility functions for WhatsApp integration
+export const createWhatsAppLink = (message: string): string => {
+  const encodedMessage = encodeURIComponent(message);
+  return `https://wa.me/${CONTACT_INFO.whatsapp.replace('+', '')}?text=${encodedMessage}`;
+};
+
+export const createProductQuery = (productName: string, sku: string): string => {
+  return `Hola! Estoy interesado en el producto: ${productName} (SKU: ${sku}). ¿Podrían darme más información sobre disponibilidad y precio?`;
+};
+
+export const createSpecialOrderMessage = (
+  productName: string,
+  details: string,
+  customerName: string,
+  customerPhone: string,
+  budget?: string
+): string => {
+  let message = `🔧 SOLICITUD DE REPUESTO ESPECIAL\n\n`;
+  message += `👤 Cliente: ${customerName}\n`;
+  message += `📱 Teléfono: ${customerPhone}\n\n`;
+  message += `🔍 Producto solicitado: ${productName}\n\n`;
+  message += `📋 Detalles:\n${details}\n\n`;
+  
+  if (budget) {
+    message += `💰 Presupuesto: ${budget}\n\n`;
+  }
+  
+  message += `¡Gracias por contactarnos! Te responderemos pronto con información sobre disponibilidad y precio.`;
+  
+  return message;
+};
