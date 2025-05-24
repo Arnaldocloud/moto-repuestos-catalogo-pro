@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { categoryNames, Category } from "@/types/product";
 import { 
-  Engine, 
+  Cog, 
   Zap, 
   Circle, 
   Car, 
@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 const categoryIcons: Record<Category, React.ReactNode> = {
-  motor: <Engine className="h-8 w-8" />,
+  motor: <Cog className="h-8 w-8" />,
   frenos: <Disc className="h-8 w-8" />,
   electricos: <Zap className="h-8 w-8" />,
   suspension: <Circle className="h-8 w-8" />,
