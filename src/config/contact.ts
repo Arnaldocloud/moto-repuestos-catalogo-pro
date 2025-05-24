@@ -1,37 +1,27 @@
 
-// Configura tu información de contacto aquí
-export const WHATSAPP_NUMBER = "5491112345678"; // Reemplaza con tu número (formato internacional)
-export const STORE_NAME = "Moto Repuestos Pro";
+export const STORE_NAME = "MotoRepuestos Pro";
 
-// Función para crear enlaces de WhatsApp
-export const createWhatsAppLink = (message: string): string => {
-  const encodedMessage = encodeURIComponent(message);
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-};
-
-// Plantillas de mensajes
-export const createProductQuery = (product: string, sku: string): string => {
-  return `Hola ${STORE_NAME}, estoy interesado en el producto: *${product}* (SKU: ${sku}). ¿Podrían darme más información sobre disponibilidad y precio?`;
-};
-
-export const createSpecialOrderMessage = (
-  productName: string,
-  details: string,
-  name: string,
-  phone: string,
-  budget?: string
-): string => {
-  let message = `🏍️ *SOLICITUD DE PEDIDO ESPECIAL* 🏍️\n\n`;
-  message += `👤 *Cliente:* ${name}\n`;
-  message += `📱 *Teléfono:* ${phone}\n\n`;
-  message += `🔍 *Producto solicitado:* ${productName}\n\n`;
-  message += `📝 *Detalles:* ${details}\n\n`;
+export const CONTACT_INFO = {
+  phone: "+584121234567",
+  email: "info@motorepuestospro.com",
+  address: "Av. Principal, Centro Comercial Plaza, Local 15",
+  city: "Caracas, Venezuela",
+  whatsapp: "+584121234567",
+  instagram: "@motorepuestospro",
+  facebook: "motorepuestospro",
   
-  if (budget) {
-    message += `💰 *Presupuesto aproximado:* ${budget}\n\n`;
+  // Horarios
+  schedule: {
+    weekdays: "Lunes a Viernes: 8:00 AM - 6:00 PM",
+    saturday: "Sábados: 8:00 AM - 4:00 PM",
+    sunday: "Domingos: Cerrado"
+  },
+
+  // Información del negocio
+  businessInfo: {
+    established: "2014",
+    experience: "Más de 10 años",
+    coverage: "Todo Venezuela",
+    warranty: "Garantía en todos los productos"
   }
-  
-  message += `Gracias por contactar a ${STORE_NAME}. Revisaremos su solicitud y le responderemos a la brevedad.`;
-  
-  return message;
 };

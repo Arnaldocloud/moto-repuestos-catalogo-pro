@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Settings, Search, PlusCircle, BarChart3, TrendingUp, Truck } from "lucide-react";
 import Header from "@/components/Header";
 import CategoryFilter from "@/components/CategoryFilter";
@@ -9,6 +9,9 @@ import QuickViewModal from "@/components/QuickViewModal";
 import FloatingContact from "@/components/FloatingContact";
 import SpecialOrderForm from "@/components/SpecialOrderForm";
 import SupabaseConnectionTest from "@/components/SupabaseConnectionTest";
+import BusinessInfo from "@/components/BusinessInfo";
+import Testimonials from "@/components/Testimonials";
+import SEOHead from "@/components/SEOHead";
 import { Product } from "@/types/product";
 import { useProducts } from "@/hooks/useProducts";
 import { STORE_NAME } from "@/config/contact";
@@ -34,8 +37,9 @@ const ProductGridSkeleton = () => {
 };
 
 const Index = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("todos");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || "todos");
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('search') || "");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState<boolean>(false);
   const [isSpecialOrderOpen, setIsSpecialOrderOpen] = useState<boolean>(false);
@@ -51,6 +55,15 @@ const Index = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Sincronizar con URL params
+  useEffect(() => {
+    const category = searchParams.get('category');
+    const search = searchParams.get('search');
+    
+    if (category) setSelectedCategory(category);
+    if (search) setSearchQuery(search);
+  }, [searchParams]);
 
   const {
     data: products,
@@ -74,11 +87,13 @@ const Index = () => {
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
     setSearchQuery("");
+    setSearchParams(category !== "todos" ? { category } : {});
   };
   
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setSelectedCategory("todos");
+    setSearchParams(query ? { search: query } : {});
   };
   
   const handleQuickView = (product: Product) => {
@@ -104,6 +119,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead 
+        title="Repuestos de Motos de Calidad - Envíos a toda Venezuela"
+        description="Encuentra los mejores repuestos para tu moto. Motor, frenos, eléctricos, suspensión y más. Calidad garantizada y envíos rápidos a toda Venezuela."
+        keywords="repuestos motos Venezuela, repuestos motocicletas Caracas, motor moto, frenos moto, repuestos Honda, repuestos Yamaha"
+      />
+      
       <Header onSearch={handleSearch} />
       
       {/* Hero Section */}
@@ -115,22 +136,19 @@ const Index = () => {
             muted 
             loop 
             className="w-full h-full object-cover"
-            poster="/images/motorcycle-poster.jpg" // Imagen de respaldo mientras carga el video
+            poster="/images/motorcycle-poster.jpg"
           >
             Tu navegador no soporta videos HTML5.
           </video>
-          {/* Overlay para mejorar legibilidad del texto - Gradiente en lugar de color plano */}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/40 z-10"></div>
         </div>
         
         <div className="container mx-auto flex flex-col items-center relative z-20">
-          {/* Add Admin Panel Button */}
-         
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 animate-fade-in text-shadow-sm">
             {STORE_NAME}
           </h1>
           <p className="text-lg text-center max-w-2xl mb-6 animate-fade-in text-shadow-sm">
-            Encuentra los mejores repuestos para tu moto con calidad garantizada y envíos a todo el país
+            Encuentra los mejores repuestos para tu moto con calidad garantizada y envíos a todo Venezuela
           </p>
           
           {/* Diagnostic Section */}
@@ -214,28 +232,52 @@ const Index = () => {
             )}
           </div>
         </div>
+
+        {/* Secciones adicionales para SEO y credibilidad */}
+        <div className="mt-16 space-y-16">
+          <BusinessInfo />
+          <Testimonials />
+        </div>
       </main>
       
       <footer className="bg-motorcycle-dark text-white py-8 px-4">
         <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="mb-6 md:mb-0">
               <h3 className="text-xl font-bold mb-4">{STORE_NAME}</h3>
-              <p className="max-w-md text-gray-300">
-                Ofrecemos una amplia variedad de repuestos para motos de todas las marcas y modelos. Calidad garantizada y los mejores precios del mercado.
+              <p className="max-w-md text-gray-300 mb-4">
+                Más de 10 años ofreciendo repuestos de calidad para motocicletas en Venezuela. 
+                Somos tu aliado confiable para mantener tu moto en perfecto estado.
               </p>
+              <div className="flex space-x-4">
+                <a href="#" className="text-gray-300 hover:text-white">Instagram</a>
+                <a href="#" className="text-gray-300 hover:text-white">Facebook</a>
+                <a href="#" className="text-gray-300 hover:text-white">YouTube</a>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-3">Enlaces Rápidos</h4>
+              <div className="space-y-2">
+                <Link to="/categorias" className="block text-gray-300 hover:text-white">Categorías</Link>
+                <Link to="/contacto" className="block text-gray-300 hover:text-white">Contacto</Link>
+                <a href="#" className="block text-gray-300 hover:text-white">Términos y Condiciones</a>
+                <a href="#" className="block text-gray-300 hover:text-white">Política de Privacidad</a>
+              </div>
             </div>
             
             <div>
               <h4 className="font-semibold mb-3">Contáctanos</h4>
-              <p className="text-gray-300">WhatsApp: +XX XXXX-XXXX</p>
+              <p className="text-gray-300">WhatsApp: +58 412-123-4567</p>
               <p className="text-gray-300">Email: info@motorepuestospro.com</p>
-              <p className="text-gray-300">Dirección: Av. Ejemplo 123, Ciudad</p>
+              <p className="text-gray-300">Dirección: Av. Principal, Centro Comercial Plaza, Local 15, Caracas</p>
+              <p className="text-gray-300 mt-2">Lun-Sáb: 8:00 AM - 6:00 PM</p>
             </div>
           </div>
           
           <div className="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400 text-sm">
-            &copy; {new Date().getFullYear()} {STORE_NAME}. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} {STORE_NAME}. Todos los derechos reservados. 
+            <span className="block md:inline md:ml-2">Hecho con ❤️ en Venezuela</span>
           </div>
         </div>
       </footer>
