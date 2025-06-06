@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { CreateOrderData, Order, OrderItem } from '@/types/order';
+import { CreateOrderData, Order, OrderItem, OrderStatus } from '@/types/order';
 
 export const createOrderWithItems = async (orderData: CreateOrderData): Promise<Order> => {
   try {
@@ -44,7 +44,11 @@ export const createOrderWithItems = async (orderData: CreateOrderData): Promise<
       throw new Error(`Error creating order items: ${itemsError.message}`);
     }
 
-    return order;
+    // Cast the status to OrderStatus type
+    return {
+      ...order,
+      status: order.status as OrderStatus
+    };
 
   } catch (error) {
     console.error('Error in createOrderWithItems:', error);
@@ -64,7 +68,11 @@ export const getOrderById = async (orderId: string): Promise<Order | null> => {
       throw new Error(`Error fetching order: ${error.message}`);
     }
 
-    return data;
+    // Cast the status to OrderStatus type
+    return {
+      ...data,
+      status: data.status as OrderStatus
+    };
   } catch (error) {
     console.error('Error getting order:', error);
     return null;
@@ -89,7 +97,7 @@ export const getOrderItems = async (orderId: string): Promise<OrderItem[]> => {
   }
 };
 
-export const updateOrderStatus = async (orderId: string, status: string): Promise<void> => {
+export const updateOrderStatus = async (orderId: string, status: OrderStatus): Promise<void> => {
   try {
     const { error } = await supabase
       .from('orders')
