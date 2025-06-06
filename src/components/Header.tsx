@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import CartDrawer from "./CartDrawer";
-import OrderForm from "./OrderForm";
-import { useCart } from "@/hooks/useCart";
+import { Badge } from "@/components/ui/badge";
+import { Search, ShoppingCart, Menu, X, Settings, LogIn } from "lucide-react";
 import { STORE_NAME } from "@/config/contact";
+import { useCart } from "@/hooks/useCart";
 import { useAdminRole } from "@/hooks/useAdminRole";
+import CartDrawer from "./CartDrawer";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -15,37 +16,24 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartKey, setCartKey] = useState(0);
-  const { setIsOpen: setCartOpen } = useCart();
-  const { isAdmin } = useAdminRole();
+  const { items } = useCart();
+  const { isAdmin, isLoading: isLoadingAdmin } = useAdminRole();
   const navigate = useNavigate();
-
-  // Listen for cart updates to force re-render
-  useEffect(() => {
-    const handleCartUpdate = () => {
-      setCartKey(prev => prev + 1);
-    };
-
-    window.addEventListener('cartUpdated', handleCartUpdate);
-    return () => {
-      window.removeEventListener('cartUpdated', handleCartUpdate);
-    };
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchQuery);
-    navigate("/");
+    setIsMenuOpen(false);
   };
 
-  const handleCartCheckout = () => {
-    setIsOrderFormOpen(true);
-  };
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+  const openCart = () => {
+    setCartKey(prev => prev + 1);
+    setIsCartOpen(true);
   };
 
   return (
@@ -54,140 +42,112 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 bg-motorcycle-red rounded-md flex items-center justify-center">
-              <span className="text-white font-bold text-sm">MR</span>
+            <div className="flex items-center">
+              <span className="text-xl font-bold text-primary">{STORE_NAME}</span>
             </div>
-            <span className="font-bold text-lg hidden sm:inline-block">{STORE_NAME}</span>
           </Link>
 
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <form onSubmit={handleSearch} className="relative w-full">
+          {/* Desktop Search */}
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-6">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 type="search"
                 placeholder="Buscar repuestos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-10"
+                className="pl-10 pr-4 w-full"
               />
-              <Button
-                type="submit"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-            </form>
-          </div>
+            </div>
+          </form>
 
-          {/* Navigation - Desktop */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
-              Inicio
-            </Link>
-            <Link to="/categorias" className="text-sm font-medium transition-colors hover:text-primary">
-              Categorías
-            </Link>
-            <Link to="/contacto" className="text-sm font-medium transition-colors hover:text-primary">
-              Contacto
-            </Link>
-            {isAdmin && (
-              <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1">
-                <Shield className="h-4 w-4" />
-                Admin
-              </Link>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-4">
+            <ThemeSwitcher />
+            
+            {!isLoadingAdmin && isAdmin && (
+              <Button asChild variant="outline" size="sm">
+                <Link to="/admin">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Admin
+                </Link>
+              </Button>
             )}
-            <Link to="/auth" className="text-sm font-medium transition-colors hover:text-primary">
-              Login
-            </Link>
-            <CartDrawer key={cartKey} onCheckout={handleCartCheckout} />
-          </nav>
+            
+            <Button asChild variant="outline" size="sm">
+              <Link to="/auth">
+                <LogIn className="mr-2 h-4 w-4" />
+                Login
+              </Link>
+            </Button>
+
+            <Button variant="outline" size="sm" onClick={openCart} className="relative">
+              <ShoppingCart className="h-4 w-4" />
+              {itemCount > 0 && (
+                <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                  {itemCount}
+                </Badge>
+              )}
+            </Button>
+          </div>
 
           {/* Mobile Menu Button */}
           <div className="flex items-center space-x-2 md:hidden">
-            <CartDrawer key={cartKey} onCheckout={handleCartCheckout} />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleMobileMenu}
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <ThemeSwitcher />
+            <Button variant="outline" size="sm" onClick={openCart} className="relative">
+              <ShoppingCart className="h-4 w-4" />
+              {itemCount > 0 && (
+                <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                  {itemCount}
+                </Badge>
+              )}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t bg-background">
+        {isMenuOpen && (
+          <div className="md:hidden border-t bg-background/95 backdrop-blur">
             <div className="container mx-auto px-4 py-4 space-y-4">
-              {/* Mobile Search */}
-              <form onSubmit={handleSearch} className="relative">
-                <Input
-                  type="search"
-                  placeholder="Buscar repuestos..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pr-10"
-                />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3"
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
+              <form onSubmit={handleSearch}>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    type="search"
+                    placeholder="Buscar repuestos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-4 w-full"
+                  />
+                </div>
               </form>
-
-              {/* Mobile Navigation */}
-              <nav className="flex flex-col space-y-2">
-                <Link 
-                  to="/" 
-                  className="text-sm font-medium py-2 transition-colors hover:text-primary"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Inicio
-                </Link>
-                <Link 
-                  to="/categorias" 
-                  className="text-sm font-medium py-2 transition-colors hover:text-primary"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Categorías
-                </Link>
-                <Link 
-                  to="/contacto" 
-                  className="text-sm font-medium py-2 transition-colors hover:text-primary"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Contacto
-                </Link>
-                {isAdmin && (
-                  <Link 
-                    to="/admin" 
-                    className="text-sm font-medium py-2 transition-colors hover:text-primary flex items-center gap-1"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Shield className="h-4 w-4" />
-                    Admin
-                  </Link>
+              
+              <div className="flex flex-col space-y-2">
+                {!isLoadingAdmin && isAdmin && (
+                  <Button asChild variant="outline" size="sm" onClick={() => setIsMenuOpen(false)}>
+                    <Link to="/admin">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Admin
+                    </Link>
+                  </Button>
                 )}
-                <Link 
-                  to="/auth" 
-                  className="text-sm font-medium py-2 transition-colors hover:text-primary"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Login
-                </Link>
-              </nav>
+                
+                <Button asChild variant="outline" size="sm" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/auth">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Login
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         )}
       </header>
 
-      <OrderForm isOpen={isOrderFormOpen} onClose={() => setIsOrderFormOpen(false)} />
+      <CartDrawer key={cartKey} isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   );
 };
