@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -20,7 +19,7 @@ const ProductsAdmin: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const { data: databaseProducts, isLoading, error } = useProducts();
+  const { data: databaseProducts, isLoading, error, refetch } = useProducts();
   
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -131,6 +130,11 @@ const ProductsAdmin: React.FC = () => {
     }
   };
 
+  const handleStockUpdated = () => {
+    refetch();
+    queryClient.invalidateQueries({ queryKey: ["products"] });
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
@@ -162,6 +166,7 @@ const ProductsAdmin: React.FC = () => {
             setCurrentProduct(product);
             setIsDeleteDialogOpen(true);
           }}
+          onStockUpdated={handleStockUpdated}
         />
       )}
 

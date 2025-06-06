@@ -2,14 +2,17 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { Product, Category, categoryNames } from "@/types/product";
+import StockManagement from "./StockManagement";
 
 interface ProductsTableProps {
   products: Product[];
   onView: (product: Product) => void;
   onEdit: (product: Product) => void;
   onDelete: (product: Product) => void;
+  onStockUpdated?: () => void;
 }
 
 const ProductsTable: React.FC<ProductsTableProps> = ({
@@ -17,6 +20,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   onView,
   onEdit,
   onDelete,
+  onStockUpdated
 }) => {
   return (
     <div className="rounded-md border">
@@ -46,14 +50,22 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                 <TableCell>{categoryNames[product.category as Category]}</TableCell>
                 <TableCell>${product.price.toFixed(2)}</TableCell>
                 <TableCell>
-                  <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    product.stock > 10
-                      ? "bg-green-100 text-green-800"
-                      : product.stock > 0
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-red-100 text-red-800"
-                  }`}>
-                    {product.stock}
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={
+                        product.stock === 0
+                          ? "destructive"
+                          : product.stock <= 5
+                          ? "secondary"
+                          : "default"
+                      }
+                    >
+                      {product.stock}
+                    </Badge>
+                    <StockManagement 
+                      product={product} 
+                      onStockUpdated={onStockUpdated || (() => {})} 
+                    />
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
