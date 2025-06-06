@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,8 +17,21 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
+  const [cartKey, setCartKey] = useState(0); // Force re-render key
   const { setIsOpen: setCartOpen } = useCart();
   const navigate = useNavigate();
+
+  // Listen for cart updates to force re-render
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      setCartKey(prev => prev + 1);
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,12 +91,12 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             <Link to="/contacto" className="text-sm font-medium transition-colors hover:text-primary">
               Contacto
             </Link>
-            <CartDrawer onCheckout={handleCartCheckout} />
+            <CartDrawer key={cartKey} onCheckout={handleCartCheckout} />
           </nav>
 
           {/* Mobile Menu Button */}
           <div className="flex items-center space-x-2 md:hidden">
-            <CartDrawer onCheckout={handleCartCheckout} />
+            <CartDrawer key={cartKey} onCheckout={handleCartCheckout} />
             <Button
               variant="ghost"
               size="sm"
