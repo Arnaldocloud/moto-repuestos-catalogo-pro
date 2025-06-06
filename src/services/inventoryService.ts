@@ -1,6 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { Product } from '@/types/product';
+import { Product, Category } from '@/types/product';
 
 export interface StockMovement {
   id?: string;
@@ -109,7 +108,7 @@ export const getLowStockProducts = async (threshold: number = 5): Promise<LowSto
         price: product.price,
         discountPrice: product.discount_price,
         brand: product.brand,
-        category: product.category,
+        category: product.category as Category, // Type assertion to fix the category type
         compatibleModels: product.compatible_models || [],
         description: product.description,
         features: product.features || [],
