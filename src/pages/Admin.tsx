@@ -7,6 +7,7 @@ import CategoriesAdmin from "@/components/admin/CategoriesAdmin";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import ConnectionStatus from "@/components/ConnectionStatus";
 
 const Admin: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("products");
@@ -19,6 +20,9 @@ const Admin: React.FC = () => {
           <p className="text-muted-foreground mt-1">
             Gestiona productos y categorías de tu tienda
           </p>
+          <div className="mt-2">
+            <ConnectionStatus />
+          </div>
         </div>
         <Button asChild variant="outline" size="sm">
           <Link to="/">

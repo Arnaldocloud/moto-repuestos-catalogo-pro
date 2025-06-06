@@ -5,6 +5,17 @@ import { Product } from "@/types/product";
 // Helper function to handle errors
 const handleError = (error: any, message: string) => {
   console.error(message, error);
+  
+  // Provide more detailed error information
+  if (error.message) {
+    console.error("Error details:", error.message);
+  }
+  
+  // Check if it's a connection issue
+  if (error.code === 'ENOTFOUND' || error.message?.includes('fetch')) {
+    console.error("Possible connection issue with Supabase");
+  }
+  
   throw error;
 };
 
@@ -59,11 +70,14 @@ export const getProducts = async (): Promise<Product[]> => {
     const { data, error } = await supabase.from("products").select("*");
     
     if (error) {
+      console.error("Supabase error:", error);
       return handleError(error, "Error fetching products:");
     }
     
+    console.log("Successfully fetched products:", data?.length || 0);
     return (data || []).map(formatSupabaseProduct);
   } catch (err) {
+    console.error("Network or other error:", err);
     return handleError(err, "Exception in getProducts:");
   }
 };
