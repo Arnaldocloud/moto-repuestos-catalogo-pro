@@ -1,11 +1,13 @@
+
 import React from "react";
 import { Product } from "@/types/product";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Share2, Eye, Tag } from "lucide-react";
+import { Share2, Eye, Tag, ShoppingCart } from "lucide-react";
 import { createWhatsAppLink, createProductQuery } from "@/config/contact";
+import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 
 interface ProductCardProps {
@@ -23,6 +25,7 @@ const formatPrice = (price: number | undefined | null): string => {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   const { name, price, discountPrice, brand, sku, images, isNew, stock, compatibleModels } = product;
+  const { addItem } = useCart();
   
   const hasDiscount = discountPrice !== undefined && discountPrice !== null && discountPrice < (price || 0);
   const discountPercentage = hasDiscount && price 
@@ -36,6 +39,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
       description: "Ahora puedes compartirlo con quien quieras",
       duration: 3000,
     });
+  };
+
+  const handleAddToCart = () => {
+    addItem(product, 1);
   };
 
   return (
@@ -153,35 +160,38 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
       </CardContent>
       
       <CardFooter className="p-4 pt-0 flex justify-between gap-2 flex-wrap sm:flex-nowrap">
-        <Button 
-          className="w-full transition-all hover:shadow-md font-semibold min-h-[44px] text-sm sm:text-base"
-          disabled={stock === 0}
-          onClick={() => {
-            toast.success(`Consulta enviada: ${name}`, {
-              description: "Te responderemos a la brevedad",
-            });
-          }}
-          aria-label={stock === 0 ? `Producto agotado: ${name}` : `Consultar sobre ${name}`}
-        >
-          {stock === 0 ? "Agotado" : "Consultar"}
-        </Button>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          asChild
-          className="hover:scale-105 transition-transform min-w-[44px] min-h-[44px] flex-shrink-0"
-          onClick={handleShare}
-        >
-          <a 
-            href={whatsappLink} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            aria-label={`Compartir ${name} por WhatsApp`}
+        <div className="flex gap-2 flex-1">
+          <Button 
+            className="flex-1 transition-all hover:shadow-md font-semibold min-h-[44px] text-sm sm:text-base"
+            disabled={stock === 0}
+            onClick={handleAddToCart}
+            aria-label={stock === 0 ? `Producto agotado: ${name}` : `Agregar ${name} al carrito`}
           >
-            <Share2 className="h-4 w-4" aria-hidden="true" />
-            <span className="sr-only">Compartir por WhatsApp</span>
-          </a>
-        </Button>
+            {stock === 0 ? "Agotado" : (
+              <>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Agregar
+              </>
+            )}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            asChild
+            className="hover:scale-105 transition-transform min-w-[44px] min-h-[44px] flex-shrink-0"
+            onClick={handleShare}
+          >
+            <a 
+              href={whatsappLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              aria-label={`Compartir ${name} por WhatsApp`}
+            >
+              <Share2 className="h-4 w-4" aria-hidden="true" />
+              <span className="sr-only">Compartir por WhatsApp</span>
+            </a>
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
