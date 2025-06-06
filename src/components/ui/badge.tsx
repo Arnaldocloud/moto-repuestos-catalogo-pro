@@ -1,16 +1,18 @@
+
 import React from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'primary' | 'secondary' | 'outline'; // Ejemplo de prop adicional
+  variant?: 'primary' | 'secondary' | 'outline' | 'default' | 'destructive';
 }
 
 const Badge = React.forwardRef<HTMLDivElement, Props>(
   ({ children, className = '', variant = 'primary', ...props }, ref) => {
-    // Valores por defecto para evitar undefined
     const variantClasses = {
       primary: 'bg-blue-500 text-white',
       secondary: 'bg-gray-200 text-gray-800',
-      outline: 'border border-gray-300'
+      outline: 'border border-gray-300 bg-transparent',
+      default: 'bg-blue-600 text-white',
+      destructive: 'bg-red-500 text-white'
     };
 
     return (
