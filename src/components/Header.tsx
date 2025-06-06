@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CartDrawer from "./CartDrawer";
 import OrderForm from "./OrderForm";
 import { useCart } from "@/hooks/useCart";
 import { STORE_NAME } from "@/config/contact";
+import { useAdminRole } from "@/hooks/useAdminRole";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -17,8 +17,9 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
-  const [cartKey, setCartKey] = useState(0); // Force re-render key
+  const [cartKey, setCartKey] = useState(0);
   const { setIsOpen: setCartOpen } = useCart();
+  const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
 
   // Listen for cart updates to force re-render
@@ -91,6 +92,15 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             <Link to="/contacto" className="text-sm font-medium transition-colors hover:text-primary">
               Contacto
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1">
+                <Shield className="h-4 w-4" />
+                Admin
+              </Link>
+            )}
+            <Link to="/auth" className="text-sm font-medium transition-colors hover:text-primary">
+              Login
+            </Link>
             <CartDrawer key={cartKey} onCheckout={handleCartCheckout} />
           </nav>
 
@@ -153,6 +163,23 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Contacto
+                </Link>
+                {isAdmin && (
+                  <Link 
+                    to="/admin" 
+                    className="text-sm font-medium py-2 transition-colors hover:text-primary flex items-center gap-1"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Shield className="h-4 w-4" />
+                    Admin
+                  </Link>
+                )}
+                <Link 
+                  to="/auth" 
+                  className="text-sm font-medium py-2 transition-colors hover:text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Login
                 </Link>
               </nav>
             </div>
