@@ -14,6 +14,7 @@ export const useCart = () => {
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
+        console.log("Cargando carrito desde localStorage:", parsedCart);
         setItems(parsedCart);
       } catch (error) {
         console.error('Error loading cart:', error);
@@ -24,22 +25,26 @@ export const useCart = () => {
 
   // Guardar carrito en localStorage cuando cambie
   useEffect(() => {
+    console.log("Guardando carrito en localStorage:", items);
     localStorage.setItem('cart', JSON.stringify(items));
     // Dispatch custom event to notify other components
     window.dispatchEvent(new CustomEvent('cartUpdated', { detail: items }));
   }, [items]);
 
   const addItem = useCallback((product: Product, quantity: number = 1) => {
+    console.log("addItem llamado con:", product.name, "cantidad:", quantity);
     setItems(currentItems => {
       const existingItem = currentItems.find(item => item.product_id === product.id);
       
       if (existingItem) {
         toast.success('Cantidad actualizada en el carrito');
-        return currentItems.map(item =>
+        const updatedItems = currentItems.map(item =>
           item.product_id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
+        console.log("Items después de actualizar cantidad:", updatedItems);
+        return updatedItems;
       } else {
         const newItem: CartItem = {
           id: crypto.randomUUID(),
@@ -51,7 +56,9 @@ export const useCart = () => {
           product_image: product.images?.[0]
         };
         toast.success('Producto agregado al carrito');
-        return [...currentItems, newItem];
+        const updatedItems = [...currentItems, newItem];
+        console.log("Items después de agregar nuevo producto:", updatedItems);
+        return updatedItems;
       }
     });
   }, []);

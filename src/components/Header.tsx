@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Menu, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import CartDrawer from "./CartDrawer";
 import OrderForm from "./OrderForm";
 import ThemeSwitcher from "./ThemeSwitcher";
-import { useCart } from "@/hooks/useCart";
 import { STORE_NAME } from "@/config/contact";
 import { useAdminRole } from "@/hooks/useAdminRole";
 
@@ -18,22 +18,8 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
-  const [cartKey, setCartKey] = useState(0);
-  const { setIsOpen: setCartOpen } = useCart();
   const { isAdmin, loading } = useAdminRole();
   const navigate = useNavigate();
-
-  // Listen for cart updates to force re-render
-  useEffect(() => {
-    const handleCartUpdate = () => {
-      setCartKey(prev => prev + 1);
-    };
-
-    window.addEventListener('cartUpdated', handleCartUpdate);
-    return () => {
-      window.removeEventListener('cartUpdated', handleCartUpdate);
-    };
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,13 +89,13 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
               Login
             </Link>
             <ThemeSwitcher />
-            <CartDrawer key={cartKey} onCheckout={handleCartCheckout} />
+            <CartDrawer onCheckout={handleCartCheckout} />
           </nav>
 
           {/* Mobile Menu Button */}
           <div className="flex items-center space-x-2 md:hidden">
             <ThemeSwitcher />
-            <CartDrawer key={cartKey} onCheckout={handleCartCheckout} />
+            <CartDrawer onCheckout={handleCartCheckout} />
             <Button
               variant="ghost"
               size="sm"
