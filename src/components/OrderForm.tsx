@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { Upload } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { createOrderWithItems } from '@/services/orderService';
 import { toast } from 'sonner';
@@ -19,6 +20,7 @@ interface OrderFormProps {
 const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
   const { items, getTotal, clearCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     customer_name: '',
     customer_email: '',
@@ -33,6 +35,24 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validar tipo de archivo (solo imágenes)
+      if (!file.type.startsWith('image/')) {
+        toast.error('Por favor selecciona una imagen válida');
+        return;
+      }
+      // Validar tamaño (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('La imagen debe ser menor a 5MB');
+        return;
+      }
+      setPaymentProof(file);
+      toast.success('Comprobante cargado correctamente');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -43,6 +63,11 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
 
     if (!formData.customer_name || !formData.customer_email || !formData.customer_phone) {
       toast.error('Por favor completa todos los campos obligatorios');
+      return;
+    }
+
+    if (!paymentProof) {
+      toast.error('Por favor sube el comprobante de pago móvil');
       return;
     }
 
@@ -84,6 +109,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
       });
       
       whatsappMessage += `💰 TOTAL: $${getTotal().toFixed(2)}\n\n`;
+      whatsappMessage += `💳 COMPROBANTE DE PAGO MÓVIL: Adjunto en archivo\n`;
+      whatsappMessage += `📄 Nombre del comprobante: ${paymentProof.name}\n\n`;
       
       if (formData.notes) {
         whatsappMessage += `📝 Notas: ${formData.notes}\n\n`;
@@ -96,7 +123,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
       window.open(whatsappUrl, '_blank');
 
       toast.success('Pedido enviado exitosamente', {
-        description: 'Te contactaremos pronto para confirmar tu pedido'
+        description: 'Te contactaremos pronto para confirmar tu pedido. No olvides enviar el comprobante por WhatsApp.'
       });
 
       clearCart();
@@ -108,6 +135,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
         customer_city: '',
         notes: ''
       });
+      setPaymentProof(null);
       onClose();
 
     } catch (error) {
@@ -126,7 +154,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
         <DialogHeader>
           <DialogTitle>Confirmar Pedido</DialogTitle>
           <DialogDescription>
-            Completa tus datos para procesar el pedido
+            Completa tus datos y sube el comprobante de pago móvil para procesar el pedido
           </DialogDescription>
         </DialogHeader>
 
@@ -214,6 +242,35 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
                 onChange={handleInputChange}
                 placeholder="Cualquier información adicional sobre tu pedido..."
               />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Comprobante de pago */}
+          <div className="space-y-4">
+            <h3 className="font-semibold">Comprobante de Pago Móvil *</h3>
+            <div className="space-y-2">
+              <Label htmlFor="payment_proof">Subir comprobante (imagen)</Label>
+              <div className="flex items-center gap-4">
+                <Input
+                  id="payment_proof"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  required
+                  className="file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                />
+                <Upload className="h-5 w-5 text-muted-foreground" />
+              </div>
+              {paymentProof && (
+                <p className="text-sm text-green-600">
+                  ✓ Archivo seleccionado: {paymentProof.name}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Sube una imagen del comprobante de tu pago móvil. Máximo 5MB.
+              </p>
             </div>
           </div>
 
