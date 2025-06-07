@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Menu, X, Shield } from "lucide-react";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CartDrawer from "./CartDrawer";
 import OrderForm from "./OrderForm";
+import ThemeSwitcher from "./ThemeSwitcher";
 import { useCart } from "@/hooks/useCart";
 import { STORE_NAME } from "@/config/contact";
 import { useAdminRole } from "@/hooks/useAdminRole";
@@ -102,11 +102,13 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             <Link to="/auth" className="text-sm font-medium transition-colors hover:text-primary">
               Login
             </Link>
+            <ThemeSwitcher />
             <CartDrawer key={cartKey} onCheckout={handleCartCheckout} />
           </nav>
 
           {/* Mobile Menu Button */}
           <div className="flex items-center space-x-2 md:hidden">
+            <ThemeSwitcher />
             <CartDrawer key={cartKey} onCheckout={handleCartCheckout} />
             <Button
               variant="ghost"

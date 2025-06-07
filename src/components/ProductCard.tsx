@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Share2, Eye, Tag, ShoppingCart } from "lucide-react";
+import { Share2, Eye, Tag, ShoppingCart, Star } from "lucide-react";
 import { createWhatsAppLink, createProductQuery } from "@/config/contact";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
@@ -15,7 +15,6 @@ interface ProductCardProps {
   onQuickView: (product: Product) => void;
 }
 
-// Helper para formatear precio de forma segura
 const formatPrice = (price: number | undefined | null): string => {
   if (price === undefined || price === null) {
     return "0.00";
@@ -46,82 +45,103 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   };
 
   return (
-    <Card className="h-full product-card-hover overflow-hidden transition-all duration-300 hover:-translate-y-1">
+    <Card className="group relative h-full overflow-hidden border-0 bg-card shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02]">
       <CardContent className="p-0 relative">
-        {/* Badges */}
-        <div className="absolute top-2 left-2 z-20 flex flex-col gap-2">
+        {/* Badges Container */}
+        <div className="absolute top-3 left-3 z-20 flex flex-col gap-2">
           {isNew && (
-            <Badge className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">NUEVO</Badge>
+            <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold shadow-lg animate-pulse">
+              ✨ NUEVO
+            </Badge>
           )}
           {hasDiscount && (
-            <Badge className="bg-primary text-primary hover:bg-primary/90 font-semibold animate-fade-in">-{discountPercentage}%</Badge>
+            <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white font-bold shadow-lg animate-bounce">
+              -{discountPercentage}% OFF
+            </Badge>
           )}
           {stock !== undefined && stock <= 5 && stock > 0 && (
-            <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-500 hover:bg-yellow-200 font-semibold">
-              ¡Últimas unidades!
+            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300 font-semibold shadow-sm dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700">
+              ⚡ Últimas {stock}
             </Badge>
           )}
           {stock === 0 && (
-            <Badge variant="outline" className="bg-red-100 text-red-800 border-red-500 hover:bg-red-200 font-semibold">
-              Agotado
+            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300 font-semibold shadow-sm dark:bg-red-900/20 dark:text-red-300 dark:border-red-700">
+              ❌ Agotado
             </Badge>
           )}
         </div>
         
         {/* SKU Badge */}
-        <div className="absolute top-2 right-2 z-20">
+        <div className="absolute top-3 right-3 z-20">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">
-                  <Tag className="h-3 w-3 mr-1" aria-hidden="true" /> {sku}
+                <Badge variant="outline" className="bg-background/90 backdrop-blur-sm border-border/50 shadow-sm">
+                  <Tag className="h-3 w-3 mr-1" /> 
+                  {sku}
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Código SKU</p>
+                <p>Código SKU del producto</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
         
-        {/* Image */}
-        <div className="relative aspect-square overflow-hidden">
+        {/* Image Container */}
+        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
           <img 
             src={images && images.length > 0 ? images[0] : '/placeholder.svg'} 
             alt={name} 
-            className="w-full h-full object-cover product-image-zoom"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
             width="400"
             height="400"
           />
           
+          {/* Overlay con gradiente */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
           {/* Quick view overlay */}
-          <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-300 opacity-0 hover:opacity-100 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
             <Button 
               variant="secondary" 
               size="sm"
-              className="bg-white hover:bg-white/90 text-gray-800 scale-95 hover:scale-100 transition-transform sm:text-sm md:text-base py-2 px-4"
+              className="bg-white/95 hover:bg-white text-gray-800 shadow-lg backdrop-blur-sm scale-0 group-hover:scale-100 transition-all duration-300 font-medium"
               onClick={() => onQuickView(product)}
               aria-label={`Vista rápida de ${name}`}
             >
-              <Eye className="h-4 w-4 mr-2" aria-hidden="true" />
-              Vista rápida
+              <Eye className="h-4 w-4 mr-2" />
+              Vista Rápida
             </Button>
           </div>
         </div>
         
         {/* Content */}
-        <div className="p-4">
-          <div className="text-sm text-muted-foreground mb-1">{brand}</div>
-          <h3 className="font-medium text-lg line-clamp-2 min-h-[3.5rem]">{name}</h3>
+        <div className="p-5 space-y-3">
+          {/* Brand */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+              {brand}
+            </span>
+            <div className="flex items-center gap-1">
+              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+              <span className="text-xs text-muted-foreground">4.5</span>
+            </div>
+          </div>
+          
+          {/* Product Name */}
+          <h3 className="font-semibold text-lg leading-tight line-clamp-2 min-h-[3.5rem] text-foreground group-hover:text-primary transition-colors">
+            {name}
+          </h3>
           
           {/* Compatible models */}
           {compatibleModels && compatibleModels.length > 0 && (
-            <div className="mt-2">
-              <p className="text-xs text-muted-foreground mb-1">Compatible con:</p>
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-muted-foreground">Compatible con:</p>
               <div className="flex flex-wrap gap-1">
                 {compatibleModels.slice(0, 2).map((model, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
+                  <Badge key={index} variant="outline" className="text-xs py-0.5 px-2 bg-primary/5 text-primary border-primary/20">
                     {model}
                   </Badge>
                 ))}
@@ -129,13 +149,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs py-0.5 px-2 bg-secondary text-secondary-foreground cursor-help">
                           +{compatibleModels.length - 2} más
                         </Badge>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        <div className="text-xs">
-                          {compatibleModels.slice(2).join(", ")}
+                      <TooltipContent side="bottom" className="max-w-xs">
+                        <div className="text-xs space-y-1">
+                          <p className="font-medium">Modelos compatibles:</p>
+                          <p>{compatibleModels.slice(2).join(", ")}</p>
                         </div>
                       </TooltipContent>
                     </Tooltip>
@@ -145,53 +166,71 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
             </div>
           )}
           
-          {/* Price */}
-          <div className="mt-4 flex items-end gap-2">
-            {hasDiscount ? (
-              <>
-                <div className="text-xl font-bold text-primary">${formatPrice(discountPrice)}</div>
-                <div className="text-sm text-muted-foreground line-through">${formatPrice(price)}</div>
-              </>
-            ) : (
-              <div className="text-xl font-bold">${formatPrice(price)}</div>
+          {/* Price Section */}
+          <div className="flex items-end justify-between pt-2">
+            <div className="space-y-1">
+              {hasDiscount ? (
+                <div className="space-y-1">
+                  <div className="text-2xl font-bold text-primary">
+                    ${formatPrice(discountPrice)}
+                  </div>
+                  <div className="text-sm text-muted-foreground line-through">
+                    ${formatPrice(price)}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-2xl font-bold text-foreground">
+                  ${formatPrice(price)}
+                </div>
+              )}
+            </div>
+            
+            {/* Stock indicator */}
+            {stock !== undefined && stock > 0 && (
+              <div className="text-right">
+                <div className="text-xs text-muted-foreground">Stock</div>
+                <div className={`text-sm font-medium ${stock <= 5 ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
+                  {stock} unidades
+                </div>
+              </div>
             )}
           </div>
         </div>
       </CardContent>
       
-      <CardFooter className="p-4 pt-0 flex justify-between gap-2 flex-wrap sm:flex-nowrap">
-        <div className="flex gap-2 flex-1">
-          <Button 
-            className="flex-1 transition-all hover:shadow-md font-semibold min-h-[44px] text-sm sm:text-base"
-            disabled={stock === 0}
-            onClick={handleAddToCart}
-            aria-label={stock === 0 ? `Producto agotado: ${name}` : `Agregar ${name} al carrito`}
+      <CardFooter className="p-5 pt-0 flex gap-3">
+        <Button 
+          className="flex-1 h-11 font-semibold shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50"
+          disabled={stock === 0}
+          onClick={handleAddToCart}
+          aria-label={stock === 0 ? `Producto agotado: ${name}` : `Agregar ${name} al carrito`}
+        >
+          {stock === 0 ? (
+            "Sin Stock"
+          ) : (
+            <>
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Agregar al Carrito
+            </>
+          )}
+        </Button>
+        
+        <Button 
+          variant="outline" 
+          size="icon" 
+          asChild
+          className="h-11 w-11 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+          onClick={handleShare}
+        >
+          <a 
+            href={whatsappLink} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label={`Compartir ${name} por WhatsApp`}
           >
-            {stock === 0 ? "Agotado" : (
-              <>
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Agregar
-              </>
-            )}
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            asChild
-            className="hover:scale-105 transition-transform min-w-[44px] min-h-[44px] flex-shrink-0"
-            onClick={handleShare}
-          >
-            <a 
-              href={whatsappLink} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              aria-label={`Compartir ${name} por WhatsApp`}
-            >
-              <Share2 className="h-4 w-4" aria-hidden="true" />
-              <span className="sr-only">Compartir por WhatsApp</span>
-            </a>
-          </Button>
-        </div>
+            <Share2 className="h-4 w-4" />
+          </a>
+        </Button>
       </CardFooter>
     </Card>
   );
