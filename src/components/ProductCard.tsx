@@ -33,15 +33,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
 
   const whatsappLink = createWhatsAppLink(createProductQuery(name, sku));
   
-  const handleShare = () => {
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(window.location.href + `?product=${sku}`);
     toast.success("Enlace copiado al portapapeles", {
       description: "Ahora puedes compartirlo con quien quieras",
       duration: 3000,
     });
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Agregando producto al carrito:", product);
     addItem(product, 1);
+  };
+
+  const handleWhatsAppShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.open(whatsappLink, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -218,18 +230,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
         <Button 
           variant="outline" 
           size="icon" 
-          asChild
           className="h-11 w-11 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-          onClick={handleShare}
+          onClick={handleWhatsAppShare}
+          aria-label={`Compartir ${name} por WhatsApp`}
         >
-          <a 
-            href={whatsappLink} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            aria-label={`Compartir ${name} por WhatsApp`}
-          >
-            <Share2 className="h-4 w-4" />
-          </a>
+          <Share2 className="h-4 w-4" />
         </Button>
       </CardFooter>
     </Card>
