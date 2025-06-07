@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Menu, X, Shield } from "lucide-react";
@@ -19,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
   const [cartKey, setCartKey] = useState(0);
   const { setIsOpen: setCartOpen } = useCart();
-  const { isAdmin } = useAdminRole();
+  const { isAdmin, loading } = useAdminRole();
   const navigate = useNavigate();
 
   // Listen for cart updates to force re-render
