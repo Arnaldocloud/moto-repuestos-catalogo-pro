@@ -101,11 +101,42 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const getTotal = useCallback(() => {
-    return items.reduce((total, item) => total + (item.product_price * item.quantity), 0);
+    try {
+      if (!items || items.length === 0) {
+        return 0;
+      }
+      
+      const total = items.reduce((total, item) => {
+        // Asegurar que todos los valores sean números válidos
+        const price = Number(item.product_price) || 0;
+        const quantity = Number(item.quantity) || 0;
+        return total + (price * quantity);
+      }, 0);
+      
+      // Asegurar que el total sea un número válido
+      return isNaN(total) ? 0 : total;
+    } catch (error) {
+      console.error('Error calculating total:', error);
+      return 0;
+    }
   }, [items]);
 
   const getTotalItems = useCallback(() => {
-    return items.reduce((total, item) => total + item.quantity, 0);
+    try {
+      if (!items || items.length === 0) {
+        return 0;
+      }
+      
+      const total = items.reduce((total, item) => {
+        const quantity = Number(item.quantity) || 0;
+        return total + quantity;
+      }, 0);
+      
+      return isNaN(total) ? 0 : total;
+    } catch (error) {
+      console.error('Error calculating total items:', error);
+      return 0;
+    }
   }, [items]);
 
   return (
