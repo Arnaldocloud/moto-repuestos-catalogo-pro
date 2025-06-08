@@ -57,8 +57,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   };
 
   return (
-    <Card className="group relative h-full overflow-hidden border border-border bg-card shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02]">
-      <CardContent className="p-0 relative">
+    <Card className="group relative h-full overflow-hidden border border-border bg-card shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] flex flex-col">
+      <CardContent className="p-0 relative flex-1 flex flex-col">
         {/* Badges Container */}
         <div className="absolute top-3 left-3 z-20 flex flex-col gap-2">
           {isNew && (
@@ -129,8 +129,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
           </div>
         </div>
         
-        {/* Content */}
-        <div className="p-5 space-y-3">
+        {/* Content - flexible content area */}
+        <div className="p-5 space-y-3 flex-1 flex flex-col">
           {/* Brand */}
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
@@ -142,44 +142,46 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
             </div>
           </div>
           
-          {/* Product Name */}
-          <h3 className="font-semibold text-lg leading-tight line-clamp-2 min-h-[3.5rem] text-foreground group-hover:text-primary transition-colors">
+          {/* Product Name - fixed height for consistency */}
+          <h3 className="font-semibold text-lg leading-tight line-clamp-2 h-[3.5rem] text-foreground group-hover:text-primary transition-colors">
             {name}
           </h3>
           
-          {/* Compatible models */}
-          {compatibleModels && compatibleModels.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground">Compatible con:</p>
-              <div className="flex flex-wrap gap-1">
-                {compatibleModels.slice(0, 2).map((model, index) => (
-                  <Badge key={index} variant="outline" className="text-xs py-0.5 px-2 bg-primary/5 text-primary border-primary/20">
-                    {model}
-                  </Badge>
-                ))}
-                {compatibleModels.length > 2 && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge variant="outline" className="text-xs py-0.5 px-2 bg-secondary text-secondary-foreground cursor-help">
-                          +{compatibleModels.length - 2} más
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="max-w-xs">
-                        <div className="text-xs space-y-1">
-                          <p className="font-medium">Modelos compatibles:</p>
-                          <p>{compatibleModels.slice(2).join(", ")}</p>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+          {/* Compatible models - flexible area */}
+          <div className="flex-1">
+            {compatibleModels && compatibleModels.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground">Compatible con:</p>
+                <div className="flex flex-wrap gap-1">
+                  {compatibleModels.slice(0, 2).map((model, index) => (
+                    <Badge key={index} variant="outline" className="text-xs py-0.5 px-2 bg-primary/5 text-primary border-primary/20">
+                      {model}
+                    </Badge>
+                  ))}
+                  {compatibleModels.length > 2 && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant="outline" className="text-xs py-0.5 px-2 bg-secondary text-secondary-foreground cursor-help">
+                            +{compatibleModels.length - 2} más
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-xs">
+                          <div className="text-xs space-y-1">
+                            <p className="font-medium">Modelos compatibles:</p>
+                            <p>{compatibleModels.slice(2).join(", ")}</p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
           
-          {/* Price Section */}
-          <div className="flex items-end justify-between pt-2">
+          {/* Price Section - always at the bottom of content */}
+          <div className="flex items-end justify-between pt-2 mt-auto">
             <div className="space-y-1">
               {hasDiscount ? (
                 <div className="space-y-1">
@@ -210,7 +212,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
         </div>
       </CardContent>
       
-      <CardFooter className="p-5 pt-0 flex gap-3">
+      {/* Footer - always at the bottom */}
+      <CardFooter className="p-5 pt-0 flex gap-3 mt-auto">
         <Button 
           className="flex-1 h-11 font-semibold shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50"
           disabled={stock === 0}
