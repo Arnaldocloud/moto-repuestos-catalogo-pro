@@ -57,7 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   };
 
   return (
-    <Card className="group relative h-full overflow-hidden border-0 bg-card shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02]">
+    <Card className="group relative h-full overflow-hidden border border-border bg-card shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02]">
       <CardContent className="p-0 relative">
         {/* Badges Container */}
         <div className="absolute top-3 left-3 z-20 flex flex-col gap-2">
