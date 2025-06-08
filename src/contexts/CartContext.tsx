@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { CartItem } from '@/types/order';
 import { Product } from '@/types/product';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CartContextType {
   items: CartItem[];
@@ -21,27 +21,90 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [sessionId, setSessionId] = useState<string>('');
 
-  // Cargar carrito desde localStorage al inicializar
+  // Generar un ID de sesión único para usuarios no autenticados
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const parsedCart = JSON.parse(savedCart);
-        console.log("Cargando carrito desde localStorage:", parsedCart);
-        setItems(parsedCart);
-      } catch (error) {
-        console.error('Error loading cart:', error);
-        localStorage.removeItem('cart');
+    const generateSessionId = () => {
+      let id = localStorage.getItem('guest_session_id');
+      if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem('guest_session_id', id);
       }
-    }
+      return id;
+    };
+
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        // Usuario autenticado: usar su ID
+        setSessionId(session.user.id);
+      } else {
+        // Usuario no autenticado: usar ID de sesión generado
+        setSessionId(generateSessionId());
+      }
+    };
+
+    checkSession();
+
+    // Escuchar cambios en la autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          setSessionId(session.user.id);
+          // Al autenticarse, limpiar carrito de invitado
+          setItems([]);
+          localStorage.removeItem('cart_guest');
+        } else {
+          setSessionId(generateSessionId());
+          // Al cerrar sesión, limpiar carrito de usuario autenticado
+          setItems([]);
+          localStorage.removeItem('cart_auth');
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Guardar carrito en localStorage cuando cambie
+  // Cargar carrito específico según tipo de sesión
   useEffect(() => {
-    console.log("Guardando carrito en localStorage:", items);
-    localStorage.setItem('cart', JSON.stringify(items));
-  }, [items]);
+    if (!sessionId) return;
+
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const cartKey = session?.user ? 'cart_auth' : 'cart_guest';
+      
+      const savedCart = localStorage.getItem(cartKey);
+      if (savedCart) {
+        try {
+          const parsedCart = JSON.parse(savedCart);
+          console.log(`Cargando carrito ${cartKey} desde localStorage:`, parsedCart);
+          setItems(parsedCart);
+        } catch (error) {
+          console.error('Error loading cart:', error);
+          localStorage.removeItem(cartKey);
+        }
+      }
+    };
+
+    checkAuth();
+  }, [sessionId]);
+
+  // Guardar carrito específico según tipo de sesión
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const saveCart = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const cartKey = session?.user ? 'cart_auth' : 'cart_guest';
+      
+      console.log(`Guardando carrito ${cartKey} en localStorage:`, items);
+      localStorage.setItem(cartKey, JSON.stringify(items));
+    };
+
+    saveCart();
+  }, [items, sessionId]);
 
   const addItem = useCallback((product: Product, quantity: number = 1) => {
     console.log("addItem llamado con:", product.name, "cantidad:", quantity);
@@ -95,17 +158,50 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   }, [removeItem]);
 
-  const clearCart = useCallback(() => {
+  const clearCart = useCallback(async () => {
     setItems([]);
-    localStorage.removeItem('cart');
+    const { data: { session } } = await supabase.auth.getSession();
+    const cartKey = session?.user ? 'cart_auth' : 'cart_guest';
+    localStorage.removeItem(cartKey);
   }, []);
 
   const getTotal = useCallback(() => {
-    return items.reduce((total, item) => total + (item.product_price * item.quantity), 0);
+    try {
+      if (!items || items.length === 0) {
+        return 0;
+      }
+      
+      const total = items.reduce((total, item) => {
+        // Asegurar que todos los valores sean números válidos
+        const price = Number(item.product_price) || 0;
+        const quantity = Number(item.quantity) || 0;
+        return total + (price * quantity);
+      }, 0);
+      
+      // Asegurar que el total sea un número válido
+      return isNaN(total) ? 0 : total;
+    } catch (error) {
+      console.error('Error calculating total:', error);
+      return 0;
+    }
   }, [items]);
 
   const getTotalItems = useCallback(() => {
-    return items.reduce((total, item) => total + item.quantity, 0);
+    try {
+      if (!items || items.length === 0) {
+        return 0;
+      }
+      
+      const total = items.reduce((total, item) => {
+        const quantity = Number(item.quantity) || 0;
+        return total + quantity;
+      }, 0);
+      
+      return isNaN(total) ? 0 : total;
+    } catch (error) {
+      console.error('Error calculating total items:', error);
+      return 0;
+    }
   }, [items]);
 
   return (
