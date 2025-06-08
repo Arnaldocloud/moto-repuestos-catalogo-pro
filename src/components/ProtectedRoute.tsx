@@ -1,0 +1,37 @@
+
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useAdminRole } from "@/hooks/useAdminRole";
+
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+/**
+ * Componente para proteger rutas que solo deben ser accesibles por administradores
+ */
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { isAdmin, loading } = useAdminRole();
+
+  // Si está cargando, mostrar un indicador
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="w-16 h-16 border-4 border-motorcycle-red border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-lg">Verificando permisos...</p>
+      </div>
+    );
+  }
+
+  // Si no es administrador, redirigir a la página principal
+  if (!isAdmin) {
+    console.log("No tiene permisos de administrador, redirigiendo...");
+    return <Navigate to="/" replace />;
+  }
+
+  // Si es administrador, mostrar el contenido protegido
+  console.log("Usuario con permisos de administrador, mostrando contenido protegido");
+  return <>{children}</>;
+};
+
+export default ProtectedRoute;
