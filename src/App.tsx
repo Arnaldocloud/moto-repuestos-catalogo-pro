@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { CartProvider } from "@/contexts/CartContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Categories from "./pages/Categories";
 import Contact from "./pages/Contact";
@@ -35,11 +34,7 @@ function App() {
                     <Route path="/categorias" element={<Categories />} />
                     <Route path="/contacto" element={<Contact />} />
                     <Route path="/auth" element={<Auth />} />
-                    <Route path="/admin" element={
-                      <ProtectedRoute>
-                        <Admin />
-                      </ProtectedRoute>
-                    } />
+                    <Route path="/admin" element={<Admin />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                   <Toaster />

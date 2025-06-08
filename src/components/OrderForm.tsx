@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { Upload, CreditCard, Smartphone, Copy } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { createOrderWithItems } from '@/services/orderService';
 import { toast } from 'sonner';
@@ -30,14 +30,6 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
     notes: ''
   });
 
-  // Datos de pago móvil
-  const paymentData = {
-    bank: "Banco de Venezuela",
-    phone: "0424-1234567",
-    ci: "V-12345678",
-    accountHolder: "MotoRepuestos Pro C.A."
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -59,11 +51,6 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
       setPaymentProof(file);
       toast.success('Comprobante cargado correctamente');
     }
-  };
-
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`${label} copiado al portapapeles`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -187,90 +174,6 @@ const OrderForm: React.FC<OrderFormProps> = ({ isOpen, onClose }) => {
             <div className="flex justify-between font-semibold">
               <span>Total:</span>
               <span>${getTotal().toFixed(2)}</span>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Información de Pago Móvil */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Smartphone className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold">Datos para Pago Móvil</h3>
-            </div>
-            <div className="bg-muted/50 p-4 rounded-lg space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">Banco:</Label>
-                  <div className="flex items-center justify-between bg-background p-2 rounded border">
-                    <span className="font-medium">{paymentData.bank}</span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(paymentData.bank, "Banco")}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">Teléfono:</Label>
-                  <div className="flex items-center justify-between bg-background p-2 rounded border">
-                    <span className="font-medium">{paymentData.phone}</span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(paymentData.phone, "Teléfono")}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">Cédula:</Label>
-                  <div className="flex items-center justify-between bg-background p-2 rounded border">
-                    <span className="font-medium">{paymentData.ci}</span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(paymentData.ci, "Cédula")}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">Titular:</Label>
-                  <div className="flex items-center justify-between bg-background p-2 rounded border">
-                    <span className="font-medium text-sm">{paymentData.accountHolder}</span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(paymentData.accountHolder, "Titular")}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="flex items-start gap-2">
-                  <CreditCard className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />
-                  <div className="text-sm text-blue-700 dark:text-blue-300">
-                    <p className="font-medium mb-1">Instrucciones para el pago:</p>
-                    <ol className="list-decimal list-inside space-y-1 text-xs">
-                      <li>Realiza el pago móvil por el monto total: <strong>${getTotal().toFixed(2)}</strong></li>
-                      <li>Toma una captura de pantalla del comprobante</li>
-                      <li>Sube la imagen del comprobante en el campo de abajo</li>
-                      <li>Completa el formulario y envía tu pedido</li>
-                    </ol>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 

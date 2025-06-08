@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import ProductsAdmin from "@/components/admin/ProductsAdmin";
 import CategoriesAdmin from "@/components/admin/CategoriesAdmin";
-import OrdersAdmin from "@/components/admin/OrdersAdmin";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -19,7 +18,7 @@ const Admin: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Panel de Administración</h1>
           <p className="text-muted-foreground mt-1">
-            Gestiona productos, categorías y pedidos de tu tienda
+            Gestiona productos y categorías de tu tienda
           </p>
           <div className="mt-2">
             <ConnectionStatus />
@@ -36,10 +35,9 @@ const Admin: React.FC = () => {
       <Separator className="my-6" />
       
       <Tabs defaultValue="products" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full md:w-auto grid-cols-3 md:grid-cols-none md:flex mb-8">
+        <TabsList className="grid w-full md:w-auto grid-cols-2 md:grid-cols-none md:flex mb-8">
           <TabsTrigger value="products">Productos</TabsTrigger>
           <TabsTrigger value="categories">Categorías</TabsTrigger>
-          <TabsTrigger value="orders">Pedidos</TabsTrigger>
         </TabsList>
         
         <TabsContent value="products" className="space-y-4">
@@ -48,10 +46,6 @@ const Admin: React.FC = () => {
         
         <TabsContent value="categories" className="space-y-4">
           <CategoriesAdmin />
-        </TabsContent>
-        
-        <TabsContent value="orders" className="space-y-4">
-          <OrdersAdmin />
         </TabsContent>
       </Tabs>
     </div>

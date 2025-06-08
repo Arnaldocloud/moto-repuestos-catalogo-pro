@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, X, Shield, LogOut } from "lucide-react";
+import { Search, Menu, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CartDrawer from "./CartDrawer";
@@ -9,8 +9,6 @@ import OrderForm from "./OrderForm";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { STORE_NAME } from "@/config/contact";
 import { useAdminRole } from "@/hooks/useAdminRole";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -20,28 +18,8 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { isAdmin, loading } = useAdminRole();
   const navigate = useNavigate();
-
-  // Verificar si hay sesión activa
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-    };
-    
-    checkAuth();
-    
-    // Escuchar cambios en la autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setIsAuthenticated(!!session);
-      }
-    );
-    
-    return () => subscription.unsubscribe();
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,18 +33,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      toast.success("Sesión cerrada correctamente");
-      navigate("/");
-    } catch (error: any) {
-      console.error("Error al cerrar sesión:", error);
-      toast.error("Error al cerrar sesión");
-    }
   };
 
   return (
@@ -119,21 +85,9 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                 Admin
               </Link>
             )}
-            {!isAuthenticated ? (
-              <Link to="/auth" className="text-sm font-medium transition-colors hover:text-primary">
-                Login
-              </Link>
-            ) : (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleLogout}
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                <LogOut className="h-4 w-4 mr-1" />
-                Logout
-              </Button>
-            )}
+            <Link to="/auth" className="text-sm font-medium transition-colors hover:text-primary">
+              Login
+            </Link>
             <ThemeSwitcher />
             <CartDrawer onCheckout={handleCartCheckout} />
           </nav>
@@ -209,28 +163,13 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                     Admin
                   </Link>
                 )}
-                {!isAuthenticated ? (
-                  <Link 
-                    to="/auth" 
-                    className="text-sm font-medium py-2 transition-colors hover:text-primary"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                ) : (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => {
-                      handleLogout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="text-sm font-medium transition-colors hover:text-primary justify-start p-0"
-                  >
-                    <LogOut className="h-4 w-4 mr-1" />
-                    Logout
-                  </Button>
-                )}
+                <Link 
+                  to="/auth" 
+                  className="text-sm font-medium py-2 transition-colors hover:text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
               </nav>
             </div>
           </div>

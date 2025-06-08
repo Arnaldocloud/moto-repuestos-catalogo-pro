@@ -26,7 +26,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, isOpen, onClos
     description, features, stock, compatibleModels 
   } = product;
 
-  const hasDiscount = discountPrice !== undefined && discountPrice !== null && discountPrice < price;
+  const hasDiscount = discountPrice !== undefined && discountPrice < price;
   const discountPercentage = hasDiscount 
     ? Math.round(((price - discountPrice!) / price) * 100) 
     : 0;
@@ -43,14 +43,6 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, isOpen, onClos
     setCurrentImageIndex((prev) => 
       prev === images.length - 1 ? 0 : prev + 1
     );
-  };
-
-  // Safe price formatting function
-  const formatPrice = (priceValue: number | undefined | null): string => {
-    if (priceValue === undefined || priceValue === null || isNaN(priceValue)) {
-      return "0.00";
-    }
-    return priceValue.toFixed(2);
   };
 
   return (
@@ -145,14 +137,14 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, isOpen, onClos
                 {hasDiscount ? (
                   <>
                     <span className="text-2xl font-bold text-primary">
-                      ${formatPrice(discountPrice)}
+                      ${discountPrice.toFixed(2)}
                     </span>
                     <span className="text-lg text-muted-foreground line-through">
-                      ${formatPrice(price)}
+                      ${price.toFixed(2)}
                     </span>
                   </>
                 ) : (
-                  <span className="text-2xl font-bold">${formatPrice(price)}</span>
+                  <span className="text-2xl font-bold">${price.toFixed(2)}</span>
                 )}
               </div>
               
@@ -228,7 +220,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, isOpen, onClos
               {showInstallments && (
                 <div className="mt-2">
                   <InstallmentCalculator 
-                    price={hasDiscount && discountPrice ? discountPrice : price} 
+                    price={hasDiscount ? discountPrice! : price} 
                   />
                 </div>
               )}

@@ -7,22 +7,43 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependencias y builds
+node_modules/
+dist/
+dist-ssr/
+
+# Variables de entorno
 .env
+.env.*
+!.env.example
+
+# Archivos de entorno específicos
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
+# Archivos de configuración local
+*.local
 
+# Archivos de depuración
+.debug/
 
+# Archivos de entorno de Vite
+.env
+.env.*
+!.env.example
